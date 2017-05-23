@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Objects;
 using System.Linq;
-using System.Web;
-using System.Globalization;
 using FullCalendar_MVC.Models.Contexto;
-using System.Data.Entity;
-using System.Data.Objects.SqlClient;
+
 
 // << dont forget to add this for converting dates to localtime
 
@@ -34,8 +29,6 @@ namespace FullCalendar_MVC.Models
         //        var rslt = ent.Eventos.Where(s => s.start >= fromDate && EntityFunctions.AddMinutes(s.start, s.end) <= toDate);
 
         //        List<DiaryEvent> result = new List<DiaryEvent>();
-
-
         //        //if (rslt != null)
         //        //{
         //        //    foreach (var item in rslt)
@@ -93,37 +86,19 @@ namespace FullCalendar_MVC.Models
 
         //}
 
-        public static void UpdateDiaryEvent(int id, string NewEventStart, string NewEventEnd)
+        public static void AtualizarEventoDiario(int id, string NewEventStart, string NewEventEnd)
         {
-            AgendaOnlineFc ent = new AgendaOnlineFc();
-            // EventStart comes ISO 8601 format, eg:  "2000-01-10T10:00:00Z" - need to convert to DateTime
-
-            Eventos rec = ent.Eventos.FirstOrDefault(s => s.ID == id);
-            if (rec != null)
+            var ent = new AgendaOnlineFc();
+            var rec = ent.Eventos.FirstOrDefault(s => s.ID == id);
+            if (rec == null) return;
+            rec.start = DateTime.Parse(NewEventStart);
+            if (!String.IsNullOrEmpty(NewEventEnd))
             {
-                DateTime DateTimeStart = DateTime.Parse(NewEventStart, null, DateTimeStyles.RoundtripKind).ToLocalTime(); // and convert offset to localtime
-                rec.start = DateTimeStart;
-                if (!String.IsNullOrEmpty(NewEventEnd))
-                {
-                    TimeSpan span = DateTime.Parse(NewEventEnd, null, DateTimeStyles.RoundtripKind).ToLocalTime() - DateTimeStart;
-                    // rec.Start = Convert.ToInt32(span.TotalMinutes);
-                }
-
-                ent.Entry(rec).State = System.Data.Entity.EntityState.Modified;
-                ent.Eventos.Add(rec);
-                ent.SaveChanges();
-
+                rec.end = Convert.ToDateTime(NewEventEnd);
             }
-
+            ent.Entry(rec).State = System.Data.Entity.EntityState.Modified;
+            ent.SaveChanges();
         }
-
-
-        private static DateTime ConvertFromUnixTimestamp(double timestamp)
-        {
-            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return origin.AddSeconds(timestamp);
-        }
-
 
         public static bool CriaNovoEvento(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento)
         {
@@ -132,13 +107,21 @@ namespace FullCalendar_MVC.Models
                 var ent = new AgendaOnlineFc();
                 var rec = new Eventos();
                 rec.title = titulo;
-                //DateTime.TryParseExact($"{data} {hora}", "dd/MM/yyyy HH:mm:ss", new CultureInfo("pt-BR"), DateTimeStyles.AllowWhiteSpaces, out dt);
                 var data = DateTime.Parse(novaDataEvento);
                 var hora = novaHoraEvento.Split(':');
                 data =  data.AddHours(Convert.ToDouble(hora[0]));
                 data = data.AddMinutes(Convert.ToDouble(hora[1]));
                 rec.start = data;
-                rec.end = rec.start.AddMinutes(Convert.ToInt32(30));
+                
+                if (!String.IsNullOrEmpty(novoDuracaoEvento))
+                {
+                    var duracao = int.Parse(novoDuracaoEvento);
+                    rec.end = rec.start.AddMinutes(duracao);
+                }
+                else
+                {
+                    rec.end = rec.start.AddMinutes(30);
+                }
                 ent.Eventos.Add(rec);
                 ent.SaveChanges();
             }

@@ -12,8 +12,8 @@ namespace FullCalendar_MVC
                         "~/Scripts/jquery-{version}.js",
                         // needed for drag/move events in fullcalendar
                         "~/Scripts/jquery-ui-{version}.js", 
-                        "~/Scripts/bootstrap.js",
-                        "~/Scripts/bootstrap-modal.js"
+                        "~/Scripts/bootstrap.js"
+                        //"~/Scripts/bootstrap-modal.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(

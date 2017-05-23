@@ -1,8 +1,11 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using FullCalendar_MVC.Models.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace FullCalendar_MVC.Models.Contexto
 {
-    public class AgendaOnlineFc : DbContext
+    public class AgendaOnlineFc : IdentityDbContext<Usuario, Grupo, Guid, UsuarioLogin, UsuarioGrupo, UsuarioIdentificacao>
     {
         public AgendaOnlineFc()
             : base("AgendaOnlineFc")

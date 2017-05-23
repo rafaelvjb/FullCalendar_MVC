@@ -1,11 +1,11 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section scripts{
-
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             var sourceFullView = { url: '/Home/GetDiaryEvents/' };
             var sourceSummaryView = { url: '/Home/GetDiarySummary/' };
@@ -17,57 +17,53 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-                defaultView: 'agendaDay',
+
+                //weekends: false, Final de semana
+                defaultView: 'agendaWeek',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
                 slotMinutes: 15,
                 utc: true,
-                events: {
-                   
-                    url: "Home/Eventos/",
-                    data:{
-                    timezone: 'America/Cuiaba'
-                    
-                }
-                },
-                eventClick: function(calEvent, jsEvent, view) {
-                    alert('You clicked on event id: ' +calEvent.ID,
+                events: '/Home/Eventos/',
+
+                eventClick: function (calEvent, jsEvent, view) {
+                    alert('You clicked on event id: ' + calEvent.ID,
                         calEvent.id +
-                        "\nSpecial ID: " + 
+                        "\nSpecial ID: " +
                         calEvent.someKey +
                         "\nAnd the title is: " +
                         calEvent.title);
 
                 },
 
-                eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
+                eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
                     if (confirm("Confirm move?")) {
-                        UpdateEvent(event.id, event.start);
+                        UpdateEvent(event.ID, event.start,event.end);
 
                     } else {
                         revertFunc();
                     }
                 },
 
-                eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
+                eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
 
                     if (confirm("Confirm change appointment length?")) {
-                        UpdateEvent(event.id, event.start, event.end);
+                        UpdateEvent(event.ID, event.start, event.end);
                     } else {
                         revertFunc();
                     }
                 },
 
 
-                dayClick: function(date, allDay, jsEvent, view) {
+                dayClick: function (date, allDay, jsEvent, view) {
                     $('#eventTitle').val("");
                     $('#eventDate').val($.fullCalendar.formatDate(date, 'dd/MM/yyyy'));
                     $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
                     ShowEventPopup(date);
                 },
 
-                viewRender: function(view, element) {
+                viewRender: function (view, element) {
 
                     if (!CalLoading) {
                         if (view.name == 'month') {
@@ -85,12 +81,13 @@
 
             CalLoading = false;
         });
-        $('#btnPopupCancel').click(function() {
+
+        $('#btnPopupCancel').click(function () {
             ClearPopupFormValues();
             $('#popupEventForm').hide();
         });
 
-        $('#btnPopupSave').click(function() {
+        $('#btnPopupSave').click(function () {
 
             $('#popupEventForm').hide();
 
@@ -107,10 +104,11 @@
                 type: 'POST',
                 url: "/Home/SaveEvent",
                 data: dataRow,
-                success: function(response) {
+                success: function (response) {
                     if (response === 'True') {
                         $('#calendar').fullCalendar('refetchEvents');
                         alert('New event saved!');
+                        $('#popupEventForm').hide();
                     } else {
                         alert('Error, could not save event!');
                     }
@@ -118,9 +116,17 @@
             });
         });
 
+
+        //function ShowEventPopup(date) {
+        //    ClearPopupFormValues();
+        //    $('#popupEventForm').modal({
+        //        show: true,
+        //        focus: ('#eventTitle')
+        //    });
+        //}
         function ShowEventPopup(date) {
             ClearPopupFormValues();
-            $('#popupEventForm').show();
+            $('#popupEventForm').modal('show');
             $('#eventTitle').focus();
         }
 
@@ -141,7 +147,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "/Home/UpdateEvent",
+                url: "/Home/AtualizarEvento",
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify(dataRow)
@@ -149,43 +155,74 @@
         }
 
     </script>
-
-
 }
-
-
-<div class="container">
-    <div id='calendar' style="width:65%"></div> 
-</div>
-
-
-<div id="popupEventForm" class="modal hide" style="display: none;">
-    <div class="modal-header"><h3>Add new event</h3></div>
-    <div class="modal-body">
-        <form id="EventForm" class="well">
-            <input type="hidden" id="eventID">
-            <label>Cliente</label>
-            <input type="text" id="eventTitle" placeholder="Title here"><br />
-            <label>Data</label>
-            <input type="date" id="eventDate"><br />
-            <label>Hora do Evento</label>
-            <input type="text" id="eventTime"><br />
-            <label>Duração do Evento (Minutos)</label>
-            <input type="text" id="eventDuration" placeholder="15"><br />
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button type="button" id="btnPopupCancel" data-dismiss="modal" class="btn">Cancelar</button>
-        <button type="button" id="btnPopupSave" data-dismiss="modal" class="btn btn-primary">Salvar Evento</button>
+<div class="row col-md-offset-1" style="padding-top:50px;">
+    <div class="col-md-10">
+        <div id="calendar"></div>
     </div>
 </div>
 
 
+<div class="modal fade" id="popupEventForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Adicionar Evento</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">Cliente</label>
+                            <input type="text" name="NomeCompleto" id="eventTitle" class="form-control" placeholder="Nome" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">Data</label>
+                            <input type="date" name="DataConsulta" id="eventDate" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">HorahCliente</label>
+                            <input type="text" name="HoraEvento" id="eventTime" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">Duração</label>
+                            <input type="text" name="duracaoEvento" id="eventDuration" class="form-control" placeholder="30" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align:center;">
+                    <button type="button" id="btnPopupCancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnPopupSave" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
-
-
-
-
-
-
+@*<div id="popupEventForm" class="modal hide" style="display: none;">
+        <div class="modal-header"><h3>Add new event</h3></div>
+        <div class="modal-body">
+            <form id="EventForm" class="well">
+                <input type="hidden" id="eventID">
+                <label>Cliente</label>
+                <input type="text" id="eventTitle" placeholder="Title here"><br />
+                <label>Data</label>
+                <input type="date" id="eventDate"><br />
+                <label>Hora do Evento</label>
+                <input type="text" id="eventTime"><br />
+                <label>Duração do Evento (Minutos)</label>
+                <input type="text" id="eventDuration" placeholder="15"><br />
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="btnPopupCancel" data-dismiss="modal" class="btn">Cancelar</button>
+            <button type="button" id="btnPopupSave" data-dismiss="modal" class="btn btn-primary">Salvar Evento</button>
+        </div>
+    </div>*@

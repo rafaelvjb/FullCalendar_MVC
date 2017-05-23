@@ -1,18 +1,19 @@
-﻿using System.Web.Routing;
-using Newtonsoft.Json;
+﻿using FullCalendar_MVC.Models.Contexto;
 
 namespace FullCalendar_MVC.Controllers
 {
     public class Contoller : System.Web.Mvc.Controller
     {
-        protected override void Initialize(RequestContext requestContext)
-        {
-            base.Initialize(requestContext);
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = DateTimeZoneHandling.Local
-            };
-        }
+
+        public AgendaOnlineFc Db = new AgendaOnlineFc();
+        //protected override void Initialize(RequestContext requestContext)
+        //{
+        //    base.Initialize(requestContext);
+        //    JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        //    {
+        //        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        //        DateTimeZoneHandling = DateTimeZoneHandling.Local
+        //    };
+        //}
     }
 }

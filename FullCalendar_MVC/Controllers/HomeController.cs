@@ -63,9 +63,10 @@ namespace FullCalendar_MVC.Controllers
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
         }
       
-        public void UpdateEvent(int id, string NewEventStart, string NewEventEnd)
+        public ActionResult AtualizarEvento(int id, string NewEventStart, string NewEventEnd)
         {
-            DiaryEvent.UpdateDiaryEvent(id, NewEventStart, NewEventEnd);
+            DiaryEvent.AtualizarEventoDiario(id, NewEventStart, NewEventEnd);
+            return RedirectToAction("/Home/Index");
         }
 
         public bool SaveEvent(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento)
