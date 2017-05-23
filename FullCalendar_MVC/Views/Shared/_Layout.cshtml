@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/scripts")
+
+
+    <script src="~/Scripts/moment.js"></script>
+    <link href="~/Content/fullcalendar.css" rel="stylesheet" />
+    <script src="~/Scripts/fullcalendar.js"></script>
+    <script src="~/Scripts/locale/pt.js"></script>
+    <script src="~/Scripts/moment-timezone.js"></script>
+    <script src="~/Scripts/moment-timezone-utils.js"></script>
+    <script src="~/Scripts/moment-timezone-with-data-2012-2022.js"></script>
+
+</head>
+<body>
+    @RenderBody()
+
+    @RenderSection("scripts", required: false)
+
+
+    @DateTime.Now
+</body>
+</html>
