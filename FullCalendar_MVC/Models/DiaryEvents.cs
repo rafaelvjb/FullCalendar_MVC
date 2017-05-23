@@ -34,7 +34,7 @@ namespace FullCalendar_MVC.Models
         //        var rslt = ent.Eventos.Where(s => s.start >= fromDate && EntityFunctions.AddMinutes(s.start, s.end) <= toDate);
 
         //        List<DiaryEvent> result = new List<DiaryEvent>();
-               
+
 
         //        //if (rslt != null)
         //        //{
@@ -106,7 +106,7 @@ namespace FullCalendar_MVC.Models
                 if (!String.IsNullOrEmpty(NewEventEnd))
                 {
                     TimeSpan span = DateTime.Parse(NewEventEnd, null, DateTimeStyles.RoundtripKind).ToLocalTime() - DateTimeStart;
-                   // rec.Start = Convert.ToInt32(span.TotalMinutes);
+                    // rec.Start = Convert.ToInt32(span.TotalMinutes);
                 }
 
                 ent.Entry(rec).State = System.Data.Entity.EntityState.Modified;
@@ -125,17 +125,19 @@ namespace FullCalendar_MVC.Models
         }
 
 
-        public static bool CreateNewEvent(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento)
+        public static bool CriaNovoEvento(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento)
         {
             try
             {
                 var ent = new AgendaOnlineFc();
-                var rec = new Eventos
-                {
-                    title = titulo,
-                    start = DateTime.Parse(novaHoraEvento)
-                };
-                //var teste = DateTime.ParseExact(NewEventDate + " " + NewEventTime, "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture);
+                var rec = new Eventos();
+                rec.title = titulo;
+                //DateTime.TryParseExact($"{data} {hora}", "dd/MM/yyyy HH:mm:ss", new CultureInfo("pt-BR"), DateTimeStyles.AllowWhiteSpaces, out dt);
+                var data = DateTime.Parse(novaDataEvento);
+                var hora = novaHoraEvento.Split(':');
+                data =  data.AddHours(Convert.ToDouble(hora[0]));
+                data = data.AddMinutes(Convert.ToDouble(hora[1]));
+                rec.start = data;
                 rec.end = rec.start.AddMinutes(Convert.ToInt32(30));
                 ent.Eventos.Add(rec);
                 ent.SaveChanges();

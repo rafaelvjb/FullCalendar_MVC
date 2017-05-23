@@ -70,7 +70,7 @@ namespace FullCalendar_MVC.Controllers
 
         public bool SaveEvent(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento)
         {
-            return DiaryEvent.CreateNewEvent(titulo, novaDataEvento, novaHoraEvento, novoDuracaoEvento);
+            return DiaryEvent.CriaNovoEvento(titulo, novaDataEvento, novaHoraEvento, novoDuracaoEvento);
         }
 
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)

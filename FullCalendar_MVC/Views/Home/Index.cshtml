@@ -22,28 +22,6 @@
                 allDaySlot: false,
                 selectable: true,
                 slotMinutes: 15,
-
-                //events: function (start, end, timezone, callback) {
-                //    $.ajax({
-                //        url: 'Home/Eventos/',
-                //        data: {
-                //            // our hypothetical feed requires UNIX timestamps
-                //            start: start.unix(),
-                //            end: end.unix()
-                //        },
-                //        success: function (doc) {
-                //            var events = [];
-                //            $(doc).find('event').each(function () {
-                //                events.push({
-                //                    title: $(this).attr('title'),
-                //                    start: $(this).attr('start') // will be parsed
-                //                });
-                //            });
-                //            callback(events);
-                //        }
-                //    });
-                //},
-
                 utc: true,
                 events: {
                    
@@ -52,42 +30,11 @@
                     timezone: 'America/Cuiaba'
                     
                 }
-                    
-                    //succes: function(response).
                 },
-                //events: function(start, end, timezone) {
-                //   // var convert = moment(start).tz("America/Cuiaba").format("YYYY-MM-DD HH:mm");
-                //    $.ajax({
-                //        url: "/Home/Eventos",
-                //        dataType: "json",
-                //        data: {
-                //            start: start.unix(),
-                //            end: end.unix()
-                //        },
-                //        success: function(response) {
-                //            var events = [];
-                //            $(response).find('events').each(function () {
-                //                var start = moment(response.start).tz("America/Cuiaba").format("HH:mm");
-                //                console.log(start);
-                //                var end = moment(response.start).tz("America/Cuiaba").format("HH:mm");
-                //                console.log(end);
-                //                events.push({
-                //                    title: $(this).attr('title'),
-                //                    start: start,
-                //                    end: end // will be parsed
-                //                });
-                //            });
-                //            callback(events);
-                //        }
-                //    });
-
-                //},
-
-
                 eventClick: function(calEvent, jsEvent, view) {
-                    alert('You clicked on event id: ' +
+                    alert('You clicked on event id: ' +calEvent.ID,
                         calEvent.id +
-                        "\nSpecial ID: " + ID,
+                        "\nSpecial ID: " + 
                         calEvent.someKey +
                         "\nAnd the title is: " +
                         calEvent.title);
@@ -137,25 +84,7 @@
             });
 
             CalLoading = false;
-
-
         });
-
-        $('#btnInit').click(function() {
-            $.ajax({
-                type: 'POST',
-                url: "/Home/Init",
-                success: function(response) {
-                    if (response == 'True') {
-                        $('#calendar').fullCalendar('refetchEvents');
-                        alert('Database populated! ');
-                    } else {
-                        alert('Error, could not populate database!');
-                    }
-                }
-            });
-        });
-
         $('#btnPopupCancel').click(function() {
             ClearPopupFormValues();
             $('#popupEventForm').hide();
@@ -226,13 +155,7 @@
 
 
 <div class="container">
-
-    <div>
-        <a href="#" id="btnInit" class="btn btn-secondary">Initialise database!</a>
-    </div>
-
-    <div id='calendar' style="width:65%"></div>
-
+    <div id='calendar' style="width:65%"></div> 
 </div>
 
 
@@ -244,7 +167,7 @@
             <label>Cliente</label>
             <input type="text" id="eventTitle" placeholder="Title here"><br />
             <label>Data</label>
-            <input type="text" id="eventDate"><br />
+            <input type="date" id="eventDate"><br />
             <label>Hora do Evento</label>
             <input type="text" id="eventTime"><br />
             <label>Duração do Evento (Minutos)</label>
