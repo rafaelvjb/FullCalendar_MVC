@@ -25,9 +25,7 @@ namespace FullCalendar_MVC.Controllers
 
         public JsonResult Eventos(string start, string end, string usuarioId)
         {
-
-            //var lista = Db.Eventos.ToList();
-            var db = new AgendaOnlineFc(); // Isso deveria uma variável do controller
+           // var db = new AgendaOnlineFc(); // Isso deveria uma variável do controller
             var dtInicial = Convert.ToDateTime(start).Date;
             var dtfinal = Convert.ToDateTime(end).Date;
             IQueryable<Eventos> queryable = Db.Eventos;
@@ -40,7 +38,7 @@ namespace FullCalendar_MVC.Controllers
             var lista = queryable.Where(d => d.end < dtfinal && d.start > dtInicial).ToList();
 
             var listaConvertida = new List<Eventos>();
-            var datafim = new TimeSpan(4, 0, 0); // Não precisa criar isso uma vez por loop
+            var datafim = new TimeSpan(4, 0, 0);
             foreach (var item in lista)
             {
                 var evento = new Eventos
@@ -93,7 +91,6 @@ namespace FullCalendar_MVC.Controllers
             Db.SaveChanges();
             return RedirectToAction("/Home/Index");
         }
-
 
         public ActionResult SaveEvent(EventoViewModel eventos)
         {
