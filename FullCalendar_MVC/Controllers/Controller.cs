@@ -2,9 +2,8 @@
 
 namespace FullCalendar_MVC.Controllers
 {
-    public class Contoller : System.Web.Mvc.Controller
+    public abstract class Contoller : System.Web.Mvc.Controller
     {
-
         public AgendaOnlineFc Db = new AgendaOnlineFc();
         //protected override void Initialize(RequestContext requestContext)
         //{

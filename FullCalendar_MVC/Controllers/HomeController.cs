@@ -136,7 +136,7 @@ namespace FullCalendar_MVC.Controllers
             return Json(lista, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetDiaryEvents(string start, string end)
+        public JsonResult GetDiaryEvents(string start, string end, Guid usuarioId)
         {
             //var ApptListForDate = DiaryEvent.LoadAllAppointmentsInDateRange(start, end);
             //var eventList = from e in ApptListForDate
