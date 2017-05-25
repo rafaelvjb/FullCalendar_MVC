@@ -18,24 +18,19 @@
         <div class="container">
             <div class="navbar-header">
 
-                <button type="button" class="navbar-fixed-top" data-toggle="collapse" data-target=".navbar-collapse">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
 
                 <!--Html.ActionLink("Vendas de Títulos", "Index", "Home", new { area = "" }, new { class = "navbar-brand" })-->
-                <img src="~/fonts/Images/logofooter.png" style="padding-right:40px;padding-top:6px;" />
+                <img src="~/fonts/Images/logofooter.png" style="padding-right:40px;padding-top:6px;"/>
             </div>
             <div class="navbar-collapse collapse">
 
                 <ul class="nav navbar-nav">
-
-
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    @*<li>@Html.ActionLink("Clientes", "Indice", "Clientes")</li>
-                    <li>@Html.ActionLink("Relatórios", "Index", "Titulos")</li>*@
-
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

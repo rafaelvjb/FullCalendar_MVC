@@ -1,85 +1,90 @@
-﻿@{
+﻿@model FullCalendar_MVC.Models.Eventos
+@using FullCalendar_MVC.Models
+@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section scripts{
     <script>
-        $(document).ready(function () {
+    $(document).ready(function() {
+        var sourceFullView = { url: '/Home/GetDiaryEvents/' };
+        var sourceSummaryView = { url: '/Home/GetDiarySummary' };
+        var CalLoading = true;
 
-            var sourceFullView = { url: '/Home/GetDiaryEvents/' };
-            var sourceSummaryView = { url: '/Home/GetDiarySummary/' };
-            var CalLoading = true;
+        $('#calendar').fullCalendar({
+            minTime: "06:00:00",
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
 
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay'
-                },
+            //weekends: false, Final de semana
+            defaultView: 'agendaWeek',
+            editable: true,
+            allDaySlot: false,
+            selectable: true,
+            slotMinutes: 15,
+            events: {
+                url: 'Home/Eventos',
+                data: function() {
+                    return {
+                        usuarioId: $('#profissionalM').val()
+                    };
+                }
+            },
 
-                //weekends: false, Final de semana
-                defaultView: 'agendaWeek',
-                editable: true,
-                allDaySlot: false,
-                selectable: true,
-                slotMinutes: 15,
-                utc: true,
-                events: '/Home/Eventos/',
+            eventClick: function(calEvent, jsEvent, view) {
 
-                eventClick: function (calEvent, jsEvent, view) {
-                    alert('You clicked on event id: ' + calEvent.ID,
-                        calEvent.id +
-                        "\nSpecial ID: " +
-                        calEvent.someKey +
-                        "\nAnd the title is: " +
-                        calEvent.title);
+                if (confirm("Deseja Excluir esta consulta?")) {
+                    DeleteEvent(calEvent.ID, calEvent.start, calEvent.end);
+                } else {
+                    revertFunc();
+                }
+            },
 
-                },
+            eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
+                if (confirm("Confirm move?")) {
+                    UpdateEvent(event.ID, event.start, event.end);
 
-                eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
-                    if (confirm("Confirm move?")) {
-                        UpdateEvent(event.ID, event.start,event.end);
+                } else {
+                    revertFunc();
+                }
+            },
 
+            eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
+
+                if (confirm("Confirm change appointment length?")) {
+                    UpdateEvent(event.ID, event.start, event.end);
+                } else {
+                    revertFunc();
+                }
+            },
+
+            dayClick: function(date, allDay, jsEvent, view) {
+                $('#eventTitle').val("");
+                $('#eventDate').val($.fullCalendar.formatDate(date, 'DD/MM/YYYY'));
+                $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
+                ShowEventPopup(date);
+            },
+
+            viewRender: function(view, element) {
+
+                if (!CalLoading) {
+                    if (view.name === 'month') {
+                        $('#calendar').fullCalendar('removeEventSource', sourceFullView);
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
                     } else {
-                        revertFunc();
-                    }
-                },
-
-                eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
-
-                    if (confirm("Confirm change appointment length?")) {
-                        UpdateEvent(event.ID, event.start, event.end);
-                    } else {
-                        revertFunc();
-                    }
-                },
-
-
-                dayClick: function (date, allDay, jsEvent, view) {
-                    $('#eventTitle').val("");
-                    $('#eventDate').val($.fullCalendar.formatDate(date, 'dd/MM/yyyy'));
-                    $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
-                    ShowEventPopup(date);
-                },
-
-                viewRender: function (view, element) {
-
-                    if (!CalLoading) {
-                        if (view.name == 'month') {
-                            $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-                            $('#calendar').fullCalendar('removeEvents');
-                            $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
-                        } else {
-                            $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-                            $('#calendar').fullCalendar('removeEvents');
-                            $('#calendar').fullCalendar('addEventSource', sourceFullView);
-                        }
+                        $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('addEventSource', sourceFullView);
                     }
                 }
-            });
-
-            CalLoading = false;
+            }
+        });
+        CalLoading = false;
         });
 
         $('#btnPopupCancel').click(function () {
@@ -95,7 +100,8 @@
                 'titulo': $('#eventTitle').val(),
                 'novaDataEvento': $('#eventDate').val(),
                 'novaHoraEvento': $('#eventTime').val(),
-                'novoDuracaoEvento': $('#eventDuration').val()
+                'novoDuracaoEvento': $('#eventDuration').val(),
+                'profissional': $('#profissional').val()
             }
 
             ClearPopupFormValues();
@@ -115,7 +121,6 @@
                 }
             });
         });
-
 
         //function ShowEventPopup(date) {
         //    ClearPopupFormValues();
@@ -138,13 +143,11 @@
         }
 
         function UpdateEvent(EventID, EventStart, EventEnd) {
-
             var dataRow = {
                 'ID': EventID,
                 'NewEventStart': EventStart,
                 'NewEventEnd': EventEnd
             }
-
             $.ajax({
                 type: 'POST',
                 url: "/Home/AtualizarEvento",
@@ -154,10 +157,58 @@
             });
         }
 
+        function DeleteEvent(EventID, EventStart, EventEnd) {
+
+            var dataRow = {
+                'ID': EventID,
+                'NewEventStart': EventStart,
+                'NewEventEnd': EventEnd
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "/Home/DeletaEvento",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(dataRow)
+            });
+        }
+
+        function ObterValorProfissional() {
+            var nome = $('#profissional').val();
+
+        }
+
+        $('#profissionalM').change(function () {
+            $('#calendar').fullCalendar('refetchEvents');
+        });
     </script>
 }
-<div class="row col-md-offset-1" style="padding-top:50px;">
-    <div class="col-md-10">
+
+
+<div class="row" style="padding-top:20px;">
+
+    <div class="col-md-2">
+        @using (Html.BeginForm("Index", "Home"))
+            {
+        <div class="row">
+            <h3 style="text-align: center;"> Pesquisa por Profissional</h3>
+
+            <div class="form-group">
+                <div class="col-md-10 col-md-offset-1">
+                    @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+               {
+                   Text = option.Nome,
+                   Value = option.ProfissionalId.ToString(),
+                   Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+               }), "Selecione", new { id = "profissionalM", @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="col-md-9">
         <div id="calendar"></div>
     </div>
 </div>
@@ -171,30 +222,116 @@
                 <h4 class="modal-title" id="myModalLabel">Adicionar Evento</h4>
             </div>
             <div class="modal-body">
+
+
+                @using (Html.BeginForm("SaveEvent", "Home", FormMethod.Get))
+                {
                 <div class="row">
                     <div class="form-group">
                         <div class="col-md-6">
-                            <label class="control-label col-md-2">Cliente</label>
-                            <input type="text" name="NomeCompleto" id="eventTitle" class="form-control" placeholder="Nome" />
+                            <label class="control-label">Nome Completo</label>
+                            <input id="eventTitle" type="text" name="Titulo" class="form-control" />
                         </div>
+
                         <div class="col-md-6">
-                            <label class="control-label col-md-2">Data</label>
-                            <input type="date" name="DataConsulta" id="eventDate" class="form-control" />
+                            <label class="control-label">Data Evento</label>
+                            <input id="eventDate" type="text" name="DataEvento" class="form-control" style="display:none" />
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="control-label">Hora do Evento</label>
+                            <input id="eventTime" type="text" name="HoraEvento" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="control-label">Duração Evento</label>
+                            <input type="text" name="DuracaoEvento" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Profissional</label>
+                        <div class="col-md-8">
+
+                            @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                           {
+                               Text = option.Nome,
+                               Value = option.ProfissionalId.ToString(),
+                               Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+                           }), "Selecione", new { id = "profissional", @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="padding-top:-20px;">
+                        <div class="col-md-offset-4 col-md-8" style="padding-top:30px;">
+                            <input type="submit" value="Pesquisar" class="btn btn-default" />
                         </div>
                     </div>
                 </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">HorahCliente</label>
-                            <input type="text" name="HoraEvento" id="eventTime" class="form-control" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">Duração</label>
-                            <input type="text" name="duracaoEvento" id="eventDuration" class="form-control" placeholder="30" />
+
+
+
+<!--Modal para adicionar evento
+<div class="modal fade" id="popupEventForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Adicionar Evento</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Cliente</label>
+                                <input type="text" name="NomeCompleto" id="eventTitle" class="form-control" placeholder="Nome" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Data</label>
+                                <input type="date" name="DataConsulta" id="eventDate" class="form-control" />
+                            </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">HorahCliente</label>
+                                <input type="text" name="HoraEvento" id="eventTime" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Duração</label>
+                                <input type="text" name="duracaoEvento" id="eventDuration" class="form-control" placeholder="30" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="padding-top:20px;">
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Profissional</label>
+                            <div class="col-md-8">
+
+                                Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                       {
+                           Text = option.Nome,
+                           Value = option.ProfissionalId.ToString(),
+                           Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+                       }), "Selecione", new { id = "profissional", class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
                 <div class="modal-footer" style="text-align:center;">
                     <button type="button" id="btnPopupCancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -202,27 +339,4 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-
-@*<div id="popupEventForm" class="modal hide" style="display: none;">
-        <div class="modal-header"><h3>Add new event</h3></div>
-        <div class="modal-body">
-            <form id="EventForm" class="well">
-                <input type="hidden" id="eventID">
-                <label>Cliente</label>
-                <input type="text" id="eventTitle" placeholder="Title here"><br />
-                <label>Data</label>
-                <input type="date" id="eventDate"><br />
-                <label>Hora do Evento</label>
-                <input type="text" id="eventTime"><br />
-                <label>Duração do Evento (Minutos)</label>
-                <input type="text" id="eventDuration" placeholder="15"><br />
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" id="btnPopupCancel" data-dismiss="modal" class="btn">Cancelar</button>
-            <button type="button" id="btnPopupSave" data-dismiss="modal" class="btn btn-primary">Salvar Evento</button>
-        </div>
-    </div>*@
+    </div>-->

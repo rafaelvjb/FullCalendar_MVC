@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FullCalendar_MVC.Models.Contexto;
+using FullCalendar_MVC.Models.ViewModels;
 
 
 // << dont forget to add this for converting dates to localtime
@@ -100,28 +101,30 @@ namespace FullCalendar_MVC.Models
             ent.SaveChanges();
         }
 
-        public static bool CriaNovoEvento(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento)
+
+        public static bool CriaNovoEvento(EventoViewModel ev)
         {
             try
             {
                 var ent = new AgendaOnlineFc();
                 var rec = new Eventos();
-                rec.title = titulo;
-                var data = DateTime.Parse(novaDataEvento);
-                var hora = novaHoraEvento.Split(':');
-                data =  data.AddHours(Convert.ToDouble(hora[0]));
+                rec.title = ev.Titulo;
+                var data = DateTime.Parse(ev.DataEvento);
+                var hora = ev.HoraEvento.Split(':');
+                data = data.AddHours(Convert.ToDouble(hora[0]));
                 data = data.AddMinutes(Convert.ToDouble(hora[1]));
                 rec.start = data;
-                
-                if (!String.IsNullOrEmpty(novoDuracaoEvento))
+
+                if (!String.IsNullOrEmpty(ev.DuracaoEvento))
                 {
-                    var duracao = int.Parse(novoDuracaoEvento);
+                    var duracao = int.Parse(ev.DuracaoEvento);
                     rec.end = rec.start.AddMinutes(duracao);
                 }
                 else
                 {
                     rec.end = rec.start.AddMinutes(30);
                 }
+                rec.ProfissionalId = Guid.Parse(ev.ProfissionalId);
                 ent.Eventos.Add(rec);
                 ent.SaveChanges();
             }
@@ -131,5 +134,38 @@ namespace FullCalendar_MVC.Models
             }
             return true;
         }
+
+        //public static bool CriaNovoEvento(string titulo, string novaDataEvento, string novaHoraEvento, string novoDuracaoEvento,string id)
+        //{
+        //    try
+        //    {
+        //        var ent = new AgendaOnlineFc();
+        //        var rec = new Eventos();
+        //        rec.title = titulo;
+        //        var data = DateTime.Parse(novaDataEvento);
+        //        var hora = novaHoraEvento.Split(':');
+        //        data =  data.AddHours(Convert.ToDouble(hora[0]));
+        //        data = data.AddMinutes(Convert.ToDouble(hora[1]));
+        //        rec.start = data;
+                
+        //        if (!String.IsNullOrEmpty(novoDuracaoEvento))
+        //        {
+        //            var duracao = int.Parse(novoDuracaoEvento);
+        //            rec.end = rec.start.AddMinutes(duracao);
+        //        }
+        //        else
+        //        {
+        //            rec.end = rec.start.AddMinutes(30);
+        //        }
+        //        rec.ProfissionalId = Guid.Parse(id);
+        //        ent.Eventos.Add(rec);
+        //        ent.SaveChanges();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //    return true;
+        //}
     }
 }

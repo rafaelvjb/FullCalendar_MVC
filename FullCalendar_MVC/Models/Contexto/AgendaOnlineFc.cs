@@ -19,5 +19,8 @@ namespace FullCalendar_MVC.Models.Contexto
         }
 
         public DbSet<Eventos> Eventos { get; set; }
+
+        public DbSet<Profissional> Profissionais { get; set; }
+
     }
 }
