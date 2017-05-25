@@ -16,10 +16,10 @@ namespace FullCalendar_MVC.Controllers
             return View();
         }
 
+        //lista todos os eventos
         public JsonResult Eventos(string start, string end, string usuarioId)
         {
-            // var db = new AgendaOnlineFc(); // Isso deveria uma variável do controller
-           var dtInicial = Convert.ToDateTime(start).Date;
+            var dtInicial = Convert.ToDateTime(start).Date;
             var dtfinal = Convert.ToDateTime(end).Date;
             IQueryable<Eventos> queryable = Db.Eventos;
             if (!string.IsNullOrEmpty(usuarioId))
@@ -47,66 +47,85 @@ namespace FullCalendar_MVC.Controllers
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult AtualizarEvento(int id, string NewEventStart, string NewEventEnd)
+        public ActionResult AtualizaEvento(EventoViewModel eventos)
         {
-            DiaryEvent.AtualizarEventoDiario(id, NewEventStart, NewEventEnd);
-            return RedirectToAction("/Home/Index");
-        }
+            var data = DateTime.Parse(eventos.DataEvento);
+            var hora = eventos.HoraEvento.Split(':');
+            data = data.AddHours(double.Parse(hora[0]));
+            var start = data.AddMinutes(double.Parse(hora[1]));
 
-        public ActionResult DeletaEvento(int id)
-        {
-            var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
-            if (evento != null) Db.Eventos.Remove(evento);
+            var datafim = DateTime.Parse(eventos.DataEvento);
+            hora = eventos.DuracaoEvento.Split(':');
+            datafim = datafim.AddHours(double.Parse(hora[0]));
+            var end = datafim.AddMinutes(double.Parse(hora[1]));
+
+            var ev = new Eventos()
+            {
+                ID = eventos.ID,
+                title = eventos.Titulo,
+                start = start,
+                end = end,
+                ProfissionalId = Guid.Parse(eventos.ProfissionalId),
+                Observacoes = eventos.Observacoes
+            };
+
+            Db.Entry(ev).State = System.Data.Entity.EntityState.Modified;
             Db.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
 
+        //Deleta Evento
+        public ActionResult DeletaEvento(int? id)
+        {
+            var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
+            if (evento != null)
+            {
+                Db.Eventos.Remove(evento);
+            }
+            Db.SaveChanges();
+            return RedirectToAction("Index", "Home");
+        }
+
+        //Salva o Evento
         public ActionResult SalvaEvento(EventoViewModel eventos)
         {
-            DiaryEvent.CriaNovoEvento(eventos);
+            var rec = new Eventos();
+            rec.title = eventos.Titulo;
+            var data = DateTime.Parse(eventos.DataEvento);
+            var hora = eventos.HoraEvento.Split(':');
+            data = data.AddHours(Convert.ToDouble(hora[0]));
+            data = data.AddMinutes(Convert.ToDouble(hora[1]));
+            rec.start = data;
+
+            if (!String.IsNullOrEmpty(eventos.DuracaoEvento))
+            {
+                var duracao = int.Parse(eventos.DuracaoEvento);
+                rec.end = rec.start.AddMinutes(duracao);
+            }
+            else
+            {
+                rec.end = rec.start.AddMinutes(30);
+            }
+
+            rec.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
+            Db.Eventos.Add(rec);
+            Db.SaveChanges();
+
             return RedirectToAction("Index", "Home");
-            //return Json(new { message = "Criado com sucesso" }, JsonRequestBehavior.AllowGet);
         }
 
-        #region Metodos não Utilizados
-
-        //public JsonResult ObterEventosMes(string start, string end)
-        //{
-
-        //    var dataInicial = Guid.Parse(start);
-        //    var datafinal = Guid.Parse(end);
-
-        //    var lista = Db.Eventos
-        //        .Where(d=> d.start >= dataInicial && d.end <= datafinal).To
-
-
-
-
-        //    //var lista = new List<Eventos>();
-        //    //return Json(lista, JsonRequestBehavior.AllowGet);
-        //}
-
-        public JsonResult GetDiaryEvents(string start, string end)
+        // Atualiza a duração do evento
+        public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
-            //var ApptListForDate = DiaryEvent.LoadAllAppointmentsInDateRange(start, end);
-            //var eventList = from e in ApptListForDate
-            //                select new
-            //                {
-            //                    id = e.ID,
-            //                    title = e.Title,
-            //                    start = e.StartDateString,
-            //                    end = e.EndDateString,
-            //                    color = e.StatusColor,
-            //                    className = e.ClassName,
-            //                    someKey = e.SomeImportantKeyID,
-            //                    allDay = false
-            //                };
-            //var rows = eventList.ToArray();
-            //return Json(rows, JsonRequestBehavior.AllowGet);
-            var lista = new List<Eventos>();
-            return Json(lista, JsonRequestBehavior.AllowGet);
+            var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
+            evento.ID = id;
+            evento.start = Convert.ToDateTime(NewEventStart);
+            evento.end = Convert.ToDateTime(NewEventEnd);
+            Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+            Db.SaveChanges();
+
+            return Json(" Atualizado ");
         }
 
-        #endregion
     }
 }

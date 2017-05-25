@@ -7,15 +7,12 @@
 
 @section scripts{
     <script>
-
         var sourceFullView = {
-            url: '/Home/Eventos/',
+            url: '/Home/Eventos/'
         };
         var sourceSummaryView = { url: '/Home/Eventos' };
         var CalLoading = true;
         $(document).ready(function () {
-            //var sourceFullView = { url: '/Home/GetDiaryEvents/' };
-            //var sourceSummaryView = { url: '/Home/GetDiarySummary' };
             $('#calendar').fullCalendar({
                 minTime: "06:00:00",
                 header: {
@@ -23,26 +20,29 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-
                 //weekends: false, Final de semana
-                //defaultView: 'agendaWeek',
+                defaultView: 'agendaWeek',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
                 slotMinutes: 15,
                 height: 500,
                 events: {
-                    url: 'Home/Eventos',
+                    url: 'Eventos',
                     data: function () {
                         return {
                             usuarioId: $('#profissionalM').val()
                         };
                     }
                 },
-
                 eventClick: function (calEvent, jsEvent, view) {
-                    $('#editEventTitle').text(calEvent.title);
-                    if (confirm("Deseja Excluir esta consulta?")) {
+                    $('#ID').val(calEvent.ID);
+                    $('#editEventTitle').val(calEvent.title);
+                    $('#editEventDate').val($.fullCalendar.formatDate(calEvent.start, 'DD/MM/YYYY'));
+                    $('#editEventTime').val($.fullCalendar.formatDate(calEvent.start, 'HH:mm'));
+                    $('#editEventDuration').val($.fullCalendar.formatDate(calEvent.end, 'HH:mm'));
+                    $('#profissional').val(calEvent.ProfissionalId);
+                    if (confirm("Deseja Editar esta Evento?")) {
                         ModalEditar(calEvent);
                     } else {
                         revertFunc();
@@ -88,6 +88,7 @@
                         }
                     }
                 },
+
                 viewDisplay: function (view) {
                     if (lastView == 'undefined') {
                         lastView = 'firstRun';
@@ -116,7 +117,7 @@
                 }
             });
 
-            $('#calendar').fullCalendar('addEventSource', month);
+            //$('#calendar').fullCalendar('addEventSource', month);
             $('#calendar').fullCalendar('rerenderEvents');
             CalLoading = false;
         });
@@ -126,31 +127,23 @@
             $('#popupEventForm').hide();
         });
 
-        $('#btnPopupSave').click(function () {
-
-            $('#popupEventForm').hide();
-
-            var dataRow = {
-                'titulo': $('#eventTitle').val(),
-                'novaDataEvento': $('#eventDate').val(),
-                'novaHoraEvento': $('#eventTime').val(),
-                'novoDuracaoEvento': $('#eventDuration').val(),
-                'profissional': $('#profissional').val()
-            }
-
+        $('#BtnDeletaEvento').click(function () {
+            $('#ModalEditar').css('display', 'none');
+            var idd = parseInt($('#ID').val()); 
             ClearPopupFormValues();
-
             $.ajax({
                 type: 'POST',
-                url: "/Home/SaveEvent",
-                data: dataRow,
+                dataType: 'json',
+                contentType: "application/json",
+                url: "/Home/DeletaEvento",
+                data: {id : idd},//,
                 success: function (response) {
                     if (response === 'True') {
                         $('#calendar').fullCalendar('refetchEvents');
-                        alert('New event saved!');
-                        $('#popupEventForm').hide();
+                        alert('Evento Excluido com sucesso!!!');
+                        $('#ModalEditar').hide();
                     } else {
-                        alert('Error, could not save event!');
+                        alert('Erro, algo');
                     }
                 }
             });
@@ -181,9 +174,10 @@
                 'NewEventStart': EventStart,
                 'NewEventEnd': EventEnd
             }
+
             $.ajax({
                 type: 'POST',
-                url: "/Home/AtualizarEvento",
+                url: "/Home/AtualizaDuracao",
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify(dataRow)
@@ -210,6 +204,7 @@
         function ObterValorProfissional() {
             var nome = $('#profissional').val();
         }
+
         $('#profissionalM').change(function () {
             $('#calendar').fullCalendar('refetchEvents');
         });
@@ -221,16 +216,16 @@
         @using (Html.BeginForm("Index", "Home"))
         {
             <div class="row" style="padding-left:2px">
-                <h3 style="text-align:center;">Filtro por Profissional</h3>
+                <h5 style="text-align:center; color:black">Filtro por Profissional</h5>
 
                 <div class="form-group">
                     <div class="col-md-12 col-md-offset-1">
                         @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
-               {
-                   Text = option.Nome,
-                   Value = option.ProfissionalId.ToString(),
-                   Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
-               }), "Selecione", new { id = "profissionalM", @class = "form-control" })
+                   {
+                       Text = option.Nome,
+                       Value = option.ProfissionalId.ToString(),
+                       Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+                   }), "Selecione", new { id = "profissionalM", @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -265,18 +260,16 @@
                                 <label class="control-label col-md-2">Profissional</label>
                                 <div class="col-md-6">
                                     @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
-                           {
-                               Text = option.Nome,
-                               Value = option.ProfissionalId.ToString(),
-                               Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
-                           }), "Selecione", new { id = "profissional", @class = "form-control" })
+                               {
+                                   Text = option.Nome,
+                                   Value = option.ProfissionalId.ToString(),
+                                   Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+                               }), "Selecione", new { id = "profissional", @class = "form-control" })
                                 </div>
                             </div>
                         </div>
 
-
                     </div>
-                    <div class="row" style="margin-top:15px;"></div>
                     <div class="form-group">
                         <label for="comment">Observações:</label>
                         <textarea class="form-control" name="Observacoes" rows="5" id="comment"></textarea>
@@ -306,9 +299,6 @@
     </div>
 </div>
 
-
-
-
 <!--Modal para Editar evento-->
 <div class="modal fade" id="ModalEditar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -318,55 +308,63 @@
                 <h4 class="modal-title" id="editModalLabel">Adicionar Evento</h4>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">Cliente</label>
-                            <input type="text" name="NomeCompleto" id="editEventtitle" class="form-control" placeholder="Nome" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">Data</label>
-                            <input type="date" name="DataConsulta" id="editEventDate" class="form-control" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">HorahCliente</label>
-                            <input type="text" name="HoraEvento" id="editEventTime" class="form-control" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">Duração</label>
-                            <input type="text" name="duracaoEvento" id="editEventDuration" class="form-control" placeholder="30" />
+                @using (Html.BeginForm("AtualizaEvento", "Home", FormMethod.Get))
+            {
+                @Html.Hidden("ID")
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Nome</label>
+                                <input type="text" name="Titulo" id="editEventTitle" class="form-control" placeholder="Nome" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Data</label>
+                                <input type="text" name="DataEvento" id="editEventDate" class="form-control" />
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6" style="padding-top: 10px;">
+                                <label class="control-label">Horario de inicio</label>
+                                <input type="text" name="HoraEvento" id="editEventTime" class="form-control" />
+                            </div>
+                            <div class="col-md-6" style="padding-top: 10px;">
+                                <label class="control-label">Horario de término</label>
+                                <input type="text" name="duracaoEvento" id="editEventDuration" class="form-control" placeholder="30" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top: 20px;">
+                        <div class="form-group col-md-offset-2">
+                            <label class="control-label col-md-8" style="text-align:center;">Profissional</label>
+                            <div class="col-md-8">
 
-                <div class="row" style="padding-top:20px;">
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Profissional</label>
-                        <div class="col-md-8">
-
-                            @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                                @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                        {
                            Text = option.Nome,
                            Value = option.ProfissionalId.ToString(),
                            Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                        }), "Selecione", new { id = "profissional", @class = "form-control" })
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="comment">Observações:</label>
-                        <textarea class="form-control" name="Observacoes" rows="5" id="editComentario"></textarea>
+                   
+                        <div class="form-group">
+                            <label class="control-label">Observações:</label>
+                            <textarea class="form-control" name="Observacoes" rows="5" id="editComentario"></textarea>
+                        </div>
+                 
+                    <div class="row">
+                        <div>
+                            <div class="modal-footer col-md-8 col-md-offset-2"style="text-align: center;padding-top:10px;">
+                                <input type="submit" id="btnPopupCancel" class="btn btn-primary" data-dismiss="modal" value="Cancelar"/>
+                                <button type="button" id="BtnDeletaEvento" class="btn btn-danger" value="Deletar">Deletar</button>
+                                <input type="submit" value="Salvar" class="btn btn-success" style="text-align:center" />
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-            </div>
-            <div class="modal-footer" style="text-align:center;">
-                <button type="button" id="btnPopupCancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" id="btnPopupSave" class="btn btn-primary">Salvar</button>
+                }
             </div>
         </div>
     </div>
