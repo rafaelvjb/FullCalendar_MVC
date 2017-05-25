@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
-using DotNetOpenAuth.AspNet;
-using Microsoft.Web.WebPages.OAuth;
-using WebMatrix.WebData;
-using FullCalendar_MVC.Filters;
-using FullCalendar_MVC.Models;
 using FullCalendar_MVC.Models.Identity;
 using FullCalendar_MVC.Models.ViewModels;
 using Microsoft.AspNet.Identity;

@@ -7,84 +7,118 @@
 
 @section scripts{
     <script>
-    $(document).ready(function() {
-        var sourceFullView = { url: '/Home/GetDiaryEvents/' };
-        var sourceSummaryView = { url: '/Home/GetDiarySummary' };
+
+        var sourceFullView = {
+            url: '/Home/Eventos/',
+        };
+        var sourceSummaryView = { url: '/Home/Eventos' };
         var CalLoading = true;
+        $(document).ready(function () {
+            //var sourceFullView = { url: '/Home/GetDiaryEvents/' };
+            //var sourceSummaryView = { url: '/Home/GetDiarySummary' };
+            $('#calendar').fullCalendar({
+                minTime: "06:00:00",
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
 
-        $('#calendar').fullCalendar({
-            minTime: "06:00:00",
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month,agendaWeek,agendaDay'
-            },
+                //weekends: false, Final de semana
+                //defaultView: 'agendaWeek',
+                editable: true,
+                allDaySlot: false,
+                selectable: true,
+                slotMinutes: 15,
+                height: 500,
+                events: {
+                    url: 'Home/Eventos',
+                    data: function () {
+                        return {
+                            usuarioId: $('#profissionalM').val()
+                        };
+                    }
+                },
 
-            //weekends: false, Final de semana
-            defaultView: 'agendaWeek',
-            editable: true,
-            allDaySlot: false,
-            selectable: true,
-            slotMinutes: 15,
-            events: {
-                url: 'Home/Eventos',
-                data: function() {
-                    return {
-                        usuarioId: $('#profissionalM').val()
-                    };
-                }
-            },
-
-            eventClick: function(calEvent, jsEvent, view) {
-
-                if (confirm("Deseja Excluir esta consulta?")) {
-                    DeleteEvent(calEvent.ID, calEvent.start, calEvent.end);
-                } else {
-                    revertFunc();
-                }
-            },
-
-            eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
-                if (confirm("Confirm move?")) {
-                    UpdateEvent(event.ID, event.start, event.end);
-
-                } else {
-                    revertFunc();
-                }
-            },
-
-            eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
-
-                if (confirm("Confirm change appointment length?")) {
-                    UpdateEvent(event.ID, event.start, event.end);
-                } else {
-                    revertFunc();
-                }
-            },
-
-            dayClick: function(date, allDay, jsEvent, view) {
-                $('#eventTitle').val("");
-                $('#eventDate').val($.fullCalendar.formatDate(date, 'DD/MM/YYYY'));
-                $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
-                ShowEventPopup(date);
-            },
-
-            viewRender: function(view, element) {
-
-                if (!CalLoading) {
-                    if (view.name === 'month') {
-                        $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-                        $('#calendar').fullCalendar('removeEvents');
-                        $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
+                eventClick: function (calEvent, jsEvent, view) {
+                    $('#editEventTitle').text(calEvent.title);
+                    if (confirm("Deseja Excluir esta consulta?")) {
+                        ModalEditar(calEvent);
                     } else {
-                        $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-                        $('#calendar').fullCalendar('removeEvents');
-                        $('#calendar').fullCalendar('addEventSource', sourceFullView);
+                        revertFunc();
+                    }
+                },
+
+                eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
+                    if (confirm("Confirm move?")) {
+                        UpdateEvent(event.ID, event.start, event.end);
+
+                    } else {
+                        revertFunc();
+                    }
+                },
+
+                eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
+
+                    if (confirm("Confirm change appointment length?")) {
+                        UpdateEvent(event.ID, event.start, event.end);
+                    } else {
+                        revertFunc();
+                    }
+                },
+
+                dayClick: function (date, allDay, jsEvent, view) {
+                    $('#eventTitle').val("");
+                    $('#eventDate').val($.fullCalendar.formatDate(date, 'DD/MM/YYYY'));
+                    $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
+                    ModalAdicionar(date);
+                },
+
+                viewRender: function (view, element) {
+
+                    if (!CalLoading) {
+                        if (view.name === 'month') {
+                            $('#calendar').fullCalendar('removeEventSource', sourceFullView);
+                            $('#calendar').fullCalendar('removeEvents');
+                            $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
+                        } else {
+                            $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
+                            $('#calendar').fullCalendar('removeEvents');
+                            $('#calendar').fullCalendar('addEventSource', sourceFullView);
+                        }
+                    }
+                },
+                viewDisplay: function (view) {
+                    if (lastView == 'undefined') {
+                        lastView = 'firstRun';
+                    }
+                    if (view.name !== lastView) {
+                        if (view.name == 'agendaWeek') {
+                            $('#calendar').fullCalendar('addEventSource', month);
+                            $('#calendar').fullCalendar('removeEventSource', day);
+                            $('#calendar').fullCalendar('removeEventSource', day);
+                            $('#calendar').fullCalendar('renderEvents');
+                        }
+                        if (view.name == 'agendaDay') {
+                            $('#calendar').fullCalendar('addEventSource', day);
+                            $('#calendar').fullCalendar('removeEventSource', month);
+                            $('#calendar').fullCalendar('removeEventSource', month);
+                            $('#calendar').fullCalendar('renderEvents');
+                        }
+                        if (view.name == 'month') {
+                            $('#calendar').fullCalendar('addEventSource', month);
+                            $('#calendar').fullCalendar('removeEventSource', day);
+                            $('#calendar').fullCalendar('removeEventSource', day);
+                            $('#calendar').fullCalendar('renderEvents');
+                        }
+                        lastView = view.name;
                     }
                 }
-            }
-        });
-        CalLoading = false;
+            });
+
+            $('#calendar').fullCalendar('addEventSource', month);
+            $('#calendar').fullCalendar('rerenderEvents');
+            CalLoading = false;
         });
 
         $('#btnPopupCancel').click(function () {
@@ -122,17 +156,16 @@
             });
         });
 
-        //function ShowEventPopup(date) {
-        //    ClearPopupFormValues();
-        //    $('#popupEventForm').modal({
-        //        show: true,
-        //        focus: ('#eventTitle')
-        //    });
-        //}
-        function ShowEventPopup(date) {
+        function ModalAdicionar(date) {
             ClearPopupFormValues();
-            $('#popupEventForm').modal('show');
+            $('#ModalAdicionar').modal('show');
             $('#eventTitle').focus();
+        }
+
+        function ModalEditar(date) {
+            ClearPopupFormValues();
+            $('#ModalEditar').modal('show');
+
         }
 
         function ClearPopupFormValues() {
@@ -176,35 +209,31 @@
 
         function ObterValorProfissional() {
             var nome = $('#profissional').val();
-
         }
-
         $('#profissionalM').change(function () {
             $('#calendar').fullCalendar('refetchEvents');
         });
     </script>
 }
-
-
+<!--Filtro por Profissional-->
 <div class="row" style="padding-top:20px;">
-
     <div class="col-md-2">
         @using (Html.BeginForm("Index", "Home"))
-            {
-        <div class="row">
-            <h3 style="text-align: center;"> Pesquisa por Profissional</h3>
+        {
+            <div class="row" style="padding-left:2px">
+                <h3 style="text-align:center;">Filtro por Profissional</h3>
 
-            <div class="form-group">
-                <div class="col-md-10 col-md-offset-1">
-                    @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                <div class="form-group">
+                    <div class="col-md-12 col-md-offset-1">
+                        @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                {
                    Text = option.Nome,
                    Value = option.ProfissionalId.ToString(),
                    Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                }), "Selecione", new { id = "profissionalM", @class = "form-control" })
+                    </div>
                 </div>
             </div>
-        </div>
         }
     </div>
 
@@ -213,8 +242,8 @@
     </div>
 </div>
 
-
-<div class="modal fade" id="popupEventForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<!--Modal Adicionar-->
+<div class="modal fade" id="ModalAdicionar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -223,54 +252,54 @@
             </div>
             <div class="modal-body">
 
-
-                @using (Html.BeginForm("SaveEvent", "Home", FormMethod.Get))
+                @using (Html.BeginForm("SalvaEvento", "Home", FormMethod.Get))
                 {
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-6">
-                            <label class="control-label">Nome Completo</label>
-                            <input id="eventTitle" type="text" name="Titulo" class="form-control" />
-                        </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label class="control-label">Nome Completo</label>
+                                <input id="eventTitle" type="text" name="Titulo" class="form-control" />
+                            </div>
 
-                        <div class="col-md-6">
-                            <label class="control-label">Data Evento</label>
-                            <input id="eventDate" type="text" name="DataEvento" class="form-control" style="display:none" />
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <div class="col-md-6">
-                            <label class="control-label">Hora do Evento</label>
-                            <input id="eventTime" type="text" name="HoraEvento" class="form-control" />
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="control-label">Duração Evento</label>
-                            <input type="text" name="DuracaoEvento" class="form-control" />
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Profissional</label>
-                        <div class="col-md-8">
-
-                            @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Profissional</label>
+                                <div class="col-md-6">
+                                    @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                            {
                                Text = option.Nome,
                                Value = option.ProfissionalId.ToString(),
                                Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                            }), "Selecione", new { id = "profissional", @class = "form-control" })
+                                </div>
+                            </div>
                         </div>
+
+
+                    </div>
+                    <div class="row" style="margin-top:15px;"></div>
+                    <div class="form-group">
+                        <label for="comment">Observações:</label>
+                        <textarea class="form-control" name="Observacoes" rows="5" id="comment"></textarea>
+
+
+                        <div class="col-md-offset-5 col-md-8" style="padding-top: 30px;">
+                            <input type="submit" value="Salvar" class="btn btn-default" style="text-align:center" />
+                        </div>
+
                     </div>
 
-                    <div class="form-group" style="padding-top:-20px;">
-                        <div class="col-md-offset-4 col-md-8" style="padding-top:30px;">
-                            <input type="submit" value="Pesquisar" class="btn btn-default" />
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <input id="eventTime" type="text" name="HoraEvento" class="form-control" style="display:none" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <input type="text" name="DuracaoEvento" class="form-control" style="display:none" />
                         </div>
                     </div>
-                </div>
+                    <div class="col-md-6">
+                        <input id="eventDate" type="text" name="DataEvento" class="form-control" style="display: none" />
+                    </div>
                 }
             </div>
         </div>
@@ -280,63 +309,65 @@
 
 
 
-<!--Modal para adicionar evento
-<div class="modal fade" id="popupEventForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Adicionar Evento</h4>
+<!--Modal para Editar evento-->
+<div class="modal fade" id="ModalEditar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editModalLabel">Adicionar Evento</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">Cliente</label>
+                            <input type="text" name="NomeCompleto" id="editEventtitle" class="form-control" placeholder="Nome" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">Data</label>
+                            <input type="date" name="DataConsulta" id="editEventDate" class="form-control" />
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="col-md-6">
-                                <label class="control-label col-md-2">Cliente</label>
-                                <input type="text" name="NomeCompleto" id="eventTitle" class="form-control" placeholder="Nome" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="control-label col-md-2">Data</label>
-                                <input type="date" name="DataConsulta" id="eventDate" class="form-control" />
-                            </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">HorahCliente</label>
+                            <input type="text" name="HoraEvento" id="editEventTime" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label col-md-2">Duração</label>
+                            <input type="text" name="duracaoEvento" id="editEventDuration" class="form-control" placeholder="30" />
                         </div>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="col-md-6">
-                                <label class="control-label col-md-2">HorahCliente</label>
-                                <input type="text" name="HoraEvento" id="eventTime" class="form-control" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="control-label col-md-2">Duração</label>
-                                <input type="text" name="duracaoEvento" id="eventDuration" class="form-control" placeholder="30" />
-                            </div>
-                        </div>
-                    </div>
+                <div class="row" style="padding-top:20px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Profissional</label>
+                        <div class="col-md-8">
 
-
-                    <div class="row" style="padding-top:20px;">
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Profissional</label>
-                            <div class="col-md-8">
-
-                                Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                            @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                        {
                            Text = option.Nome,
                            Value = option.ProfissionalId.ToString(),
                            Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
-                       }), "Selecione", new { id = "profissional", class = "form-control" })
-                            </div>
+                       }), "Selecione", new { id = "profissional", @class = "form-control" })
                         </div>
                     </div>
-
-
+                    <div class="form-group">
+                        <label for="comment">Observações:</label>
+                        <textarea class="form-control" name="Observacoes" rows="5" id="editComentario"></textarea>
+                    </div>
                 </div>
-                <div class="modal-footer" style="text-align:center;">
-                    <button type="button" id="btnPopupCancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btnPopupSave" class="btn btn-primary">Salvar</button>
-                </div>
+
+            </div>
+            <div class="modal-footer" style="text-align:center;">
+                <button type="button" id="btnPopupCancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnPopupSave" class="btn btn-primary">Salvar</button>
             </div>
         </div>
-    </div>-->
+    </div>
+</div>

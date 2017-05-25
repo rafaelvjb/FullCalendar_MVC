@@ -12,6 +12,8 @@ namespace FullCalendar_MVC.Models.ViewModels
 
         public String DuracaoEvento { get; set; }
 
+        public String Observacoes { get; set; }
+
         public String ProfissionalId { get; set; }
     }
 }

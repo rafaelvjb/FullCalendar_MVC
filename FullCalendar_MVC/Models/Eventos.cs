@@ -16,6 +16,8 @@ namespace FullCalendar_MVC.Models
         public DateTime end { get; set; }
         public int StatusEnum { get; set; }
 
+        public String Observacoes { get; set; }
+
         //relacionamento com tabela profissional
         public virtual Profissional Profissional { get; set; }
     }
