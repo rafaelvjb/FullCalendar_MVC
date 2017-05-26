@@ -7,11 +7,6 @@
 
 @section scripts{
     <script>
-        //var sourceFullView = {
-        //    url: '/Home/Eventos/'
-        //};
-
-        //var sourceSummaryView = { url: '/Home/Eventos' };
         var CalLoading = true;
 
         $(document).ready(function () {
@@ -25,9 +20,7 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-
-                //weekends: false, Final de semana
-               //defaultView: 'agendaWeek',
+               defaultView: 'agendaWeek',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
@@ -183,7 +176,16 @@
                 url: "/Home/AtualizaDuracao",
                 dataType: "json",
                 contentType: "application/json",
-                data: JSON.stringify(dataRow)
+                data: JSON.stringify(dataRow),
+                success: function (response) {
+                    if (response.message == 'Sucesso') {
+                        alert('Modificado com sucesso!!!');
+                        location.reload();
+                    } else {
+                        alert('Já existe um outro evento no horario escolhido!');
+                        location.reload();
+                    }
+                }
             });
         }
 

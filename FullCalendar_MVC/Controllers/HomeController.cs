@@ -66,6 +66,11 @@ namespace FullCalendar_MVC.Controllers
             datafim = datafim.AddHours(double.Parse(hora[0]));
             var end = datafim.AddMinutes(double.Parse(hora[1]));
 
+
+            var teste = Db.Eventos
+                .FirstOrDefault(d => d.start >= start && d.end <= end);
+
+
             var ev = new Eventos()
             {
                 ID = eventos.ID,
@@ -100,27 +105,27 @@ namespace FullCalendar_MVC.Controllers
         //Salva o Evento
         public ActionResult SalvaEvento(EventoViewModel eventos)
         {
-            var rec = new Eventos();
-            rec.title = eventos.Titulo;
+            var evento = new Eventos();
+            evento.title = eventos.Titulo;
             var data = DateTime.Parse(eventos.DataEvento);
 
             var hora = eventos.HoraEvento.Split(':');
             data = data.AddHours(Convert.ToDouble(hora[0]));
             data = data.AddMinutes(Convert.ToDouble(hora[1]));
-            rec.start = data;
-
+            evento.start = data;
             if (!String.IsNullOrEmpty(eventos.DuracaoEvento))
             {
                 var duracao = int.Parse(eventos.DuracaoEvento);
-                rec.end = rec.start.AddMinutes(duracao);
+                evento.end = evento.start.AddMinutes(duracao);
             }
             else
             {
-                rec.end = rec.start.AddMinutes(30);
+                evento.end = evento.start.AddMinutes(30);
             }
 
-            rec.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
-            Db.Eventos.Add(rec);
+            evento.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
+
+            Db.Eventos.Add(evento);
             Db.SaveChanges();
 
             return RedirectToAction("Index", "Home");
@@ -133,10 +138,21 @@ namespace FullCalendar_MVC.Controllers
             evento.ID = id;
             evento.start = Convert.ToDateTime(NewEventStart);
             evento.end = Convert.ToDateTime(NewEventEnd);
-            Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
-            Db.SaveChanges();
 
-            return Json(" Atualizado ");
+            TimeSpan tm = new TimeSpan(0, 1, 0);
+            var convertido = evento.end.Subtract(tm);
+
+            var teste = Db.Eventos
+                .FirstOrDefault(d => d.start >= evento.start && d.end <= convertido);
+
+            // ReSharper disable once InvertIf
+            if (teste == null)
+            {
+                Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+                Db.SaveChanges();
+                return Json(new {message = "Sucesso"});
+            }
+            return Json(new {message = "Falha"});
         }
 
     }
