@@ -151,15 +151,18 @@ namespace FullCalendar_MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                //var lista = Db.Roles.SingleOrDefault(l => l.Id == model.Grupo.Id);
+                var lista = Db.Roles.SingleOrDefault(l => l.Id == model.Grupo.Id);
 
                 var user = new Usuario { Id = Guid.NewGuid(), UserName = model.Email, Email = model.Email };
 
                 var result = await UserManager.CreateAsync(user, model.Password);
 
-               // var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
 
-               // var roleresult = userManager.AddToRole(user.Id, lista.Name);
+                if (lista != null)
+                {
+                    var roleresult = userManager.AddToRole(user.Id, lista.Name);
+                }
 
                 if (result.Succeeded)
                 {

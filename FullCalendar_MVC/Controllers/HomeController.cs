@@ -75,15 +75,19 @@ namespace FullCalendar_MVC.Controllers
         }
 
         //Deleta Evento
-        public ActionResult DeletaEvento(int? id)
+        public JsonResult DeletaEvento(int id)
         {
-            var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
-            if (evento != null)
+
+            if (id !=  null)
             {
+                var lol= Convert.ToInt32(id);
+                var evento = Db.Eventos.FirstOrDefault(e => e.ID == lol);
                 Db.Eventos.Remove(evento);
+                Db.SaveChanges();
+                return Json(new { message = "sucesso" },JsonRequestBehavior.AllowGet);
             }
-            Db.SaveChanges();
-            return RedirectToAction("Index", "Home");
+           
+            return Json(new {message = "Problema ao deletar Evento!!!"},JsonRequestBehavior.AllowGet);
         }
 
         //Salva o Evento
