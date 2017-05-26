@@ -103,8 +103,9 @@ namespace FullCalendar_MVC.Controllers
         }
 
         //Salva o Evento
-        public ActionResult SalvaEvento(EventoViewModel eventos)
+        public JsonResult SalvaEvento(EventoViewModel eventos)
         {
+
             var evento = new Eventos();
             evento.title = eventos.Titulo;
             var data = DateTime.Parse(eventos.DataEvento);
@@ -124,11 +125,14 @@ namespace FullCalendar_MVC.Controllers
             }
 
             evento.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
-
+            if (evento.start <= DateTime.Now)
+            {
+                return Json(new {message = "Não é possivel gravar um evento com a data anterior que a atual"});
+            }
             Db.Eventos.Add(evento);
             Db.SaveChanges();
-
-            return RedirectToAction("Index", "Home");
+            return Json(new {message = "sucess"});
+            //return RedirectToAction("Index", "Home");
         }
 
         // Atualiza a duração do evento
