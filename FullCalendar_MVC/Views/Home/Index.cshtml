@@ -8,7 +8,7 @@
 @section scripts{
     <script>
         var CalLoading = true;
-
+        //Carregamento do calendário e eventos
         $(document).ready(function () {
             var month = { url: '/Home/Eventos' }
             var day = { url: '/Home/Eventos' }
@@ -106,12 +106,12 @@
             $('#calendar').fullCalendar('rerenderEvents');
             CalLoading = false;
         });
-
+        //Botão cancelar do modal editar
         $('#btnPopupCancel').click(function () {
             ClearPopupFormValues();
             $('#popupEventForm').hide();
         });
-
+        //Função em um botão do modal para deletar evento
         $('#BtnDeletaEvento').click(function () {
             $('#ModalEditar').hide();
             var idd = parseInt($('#ID').val());
@@ -130,7 +130,7 @@
                 }
             });
         });
-
+        //Função que serializa o formulário e envia para o controller por ajax 
         $(function () {
             $("#formCliente input[type=submit]").click(function (event) {
                 event.preventDefault();
@@ -147,7 +147,7 @@
                 });
             });
         });
-
+        //função que chama o ModalAdicionar
         function ModalAdicionar(date) {
             ClearPopupFormValues();
             $('#ModalAdicionar').modal('show');
@@ -185,7 +185,7 @@
                         alert('Modificado com sucesso!!!');
                         location.reload();
                     } else {
-                        alert('Já existe um outro evento no horario escolhido!');
+                        alert(response.message);
                         location.reload();
                     }
                 }

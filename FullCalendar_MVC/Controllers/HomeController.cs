@@ -66,10 +66,8 @@ namespace FullCalendar_MVC.Controllers
             datafim = datafim.AddHours(double.Parse(hora[0]));
             var end = datafim.AddMinutes(double.Parse(hora[1]));
 
-
             var teste = Db.Eventos
                 .FirstOrDefault(d => d.start >= start && d.end <= end);
-
 
             var ev = new Eventos()
             {
@@ -105,7 +103,6 @@ namespace FullCalendar_MVC.Controllers
         //Salva o Evento
         public JsonResult SalvaEvento(EventoViewModel eventos)
         {
-
             var evento = new Eventos();
             evento.title = eventos.Titulo;
             var data = DateTime.Parse(eventos.DataEvento);
@@ -143,21 +140,24 @@ namespace FullCalendar_MVC.Controllers
             evento.start = Convert.ToDateTime(NewEventStart);
             evento.end = Convert.ToDateTime(NewEventEnd);
 
-            TimeSpan tm = new TimeSpan(0, 1, 0);
+            var tm = new TimeSpan(0, 1, 0);
             var convertido = evento.end.Subtract(tm);
 
-            var teste = Db.Eventos
+            var verificaExistencia = Db.Eventos
                 .FirstOrDefault(d => d.start >= evento.start && d.end <= convertido);
 
             // ReSharper disable once InvertIf
-            if (teste == null)
+            if (verificaExistencia == null || evento.ID == verificaExistencia.ID)
             {
-                Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
-                Db.SaveChanges();
-                return Json(new {message = "Sucesso"});
+                if (evento.end >= DateTime.Now)
+                {
+                    Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+                    Db.SaveChanges();
+                    return Json(new { message = "Sucesso" });
+                }
+                return Json(new {message = "Não é possivel gravar um evento com a data anterior que a atual"});
             }
-            return Json(new {message = "Falha"});
+            return Json(new {message = "Falha ao atualizar eventos"});
         }
-
     }
 }
