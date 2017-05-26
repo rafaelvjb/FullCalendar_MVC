@@ -19,10 +19,17 @@ namespace FullCalendar_MVC.Controllers
         //lista todos os eventos
         public JsonResult Eventos(string start, string end, string usuarioId)
         {
+            var listaConvertida = new List<Eventos>();
+            //var inicio = 0;
+            //while (inicio == 0)
+            //{
+            //    return Json(listaConvertida, JsonRequestBehavior.AllowGet);
+            //    inicio++;
+            //}
             var dtInicial = Convert.ToDateTime(start).Date;
             var dtfinal = Convert.ToDateTime(end).Date;
             IQueryable<Eventos> queryable = Db.Eventos;
-            if (!string.IsNullOrEmpty(usuarioId))
+            if (!String.IsNullOrEmpty(usuarioId))
             {
                 var id = Guid.Parse(usuarioId);
                 queryable = queryable.Where(d => d.ProfissionalId == id);
@@ -30,7 +37,7 @@ namespace FullCalendar_MVC.Controllers
 
             var lista = queryable.Where(d => d.end < dtfinal && d.start > dtInicial).ToList();
 
-            var listaConvertida = new List<Eventos>();
+           
             var datafim = new TimeSpan(4, 0, 0);
             foreach (var item in lista)
             {
@@ -96,6 +103,7 @@ namespace FullCalendar_MVC.Controllers
             var rec = new Eventos();
             rec.title = eventos.Titulo;
             var data = DateTime.Parse(eventos.DataEvento);
+
             var hora = eventos.HoraEvento.Split(':');
             data = data.AddHours(Convert.ToDouble(hora[0]));
             data = data.AddMinutes(Convert.ToDouble(hora[1]));

@@ -7,15 +7,19 @@
 
 @section scripts{
     <script>
-        var sourceFullView = {
-            url: '/Home/Eventos/'
-        };
+        //var sourceFullView = {
+        //    url: '/Home/Eventos/'
+        //};
 
-        var sourceSummaryView = { url: '/Home/Eventos' };
+        //var sourceSummaryView = { url: '/Home/Eventos' };
         var CalLoading = true;
+
         $(document).ready(function () {
+            var month = {url:'/Home/Eventos'}
+            var day = { url: '/Home/Eventos' }
+
             $('#calendar').fullCalendar({
-                minTime: "06:00:00",
+                minTime: "07:00:00",
                 header: {
                     left: 'prev,next today',
                     center: 'title',
@@ -23,12 +27,12 @@
                 },
 
                 //weekends: false, Final de semana
-                defaultView: 'agendaWeek',
+               //defaultView: 'agendaWeek',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
                 slotMinutes: 15,
-                height: 500,
+                height: 472,
                 events: {
                     url: 'Eventos',
                     data: function () {
@@ -77,20 +81,19 @@
                     ModalAdicionar(date);
                 },
 
-                viewRender: function (view, element) {
-
-                    if (!CalLoading) {
-                        if (view.name === 'month') {
-                            $('#calendar').fullCalendar('removeEventSource', sourceFullView);
-                            $('#calendar').fullCalendar('removeEvents');
-                            $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
-                        } else {
-                            $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
-                            $('#calendar').fullCalendar('removeEvents');
-                            $('#calendar').fullCalendar('addEventSource', sourceFullView);
-                        }
-                    }
-                },
+                //viewRender: function (view, element) {
+                //    if (!CalLoading) {
+                //        if (view.name === 'month') {
+                //            $('#calendar').fullCalendar('removeEventSource', sourceFullView);
+                //            $('#calendar').fullCalendar('removeEvents');
+                //            $('#calendar').fullCalendar('addEventSource', sourceSummaryView);
+                //        } else {
+                //            $('#calendar').fullCalendar('removeEventSource', sourceSummaryView);
+                //            $('#calendar').fullCalendar('removeEvents');
+                //            $('#calendar').fullCalendar('addEventSource', sourceFullView);
+                //        }
+                //    }
+                //},
 
                 viewDisplay: function (view) {
                     if (lastView == 'undefined') {
@@ -211,12 +214,12 @@
     </script>
 }
 <!--Filtro por Profissional-->
-<div class="row" style="padding-top:20px;">
-    <div class="col-md-2">
+<div class="row" style="padding-top:15px;">
+    <div class="col-md-3">
         @using (Html.BeginForm("Index", "Home"))
         {
-        <div class="row" style="padding-left:2px">
-            <h5 style="text-align:center; color:black">Filtro por Profissional</h5>
+        <div class="row" style="padding-top:20px">
+            <h4 style="text-align:center;padding-left:30px">Filtro por Profissional</h4>
 
             <div class="form-group">
                 <div class="col-md-12 col-md-offset-1">
