@@ -14,6 +14,8 @@ namespace FullCalendar_MVC.Models
 
         public String Nome { get; set; }
 
+        public bool Ativo { get; set; }
+
         //Relacionamento com tabela eventos
         public virtual ICollection<Eventos> Eventos { get; set; }
     }

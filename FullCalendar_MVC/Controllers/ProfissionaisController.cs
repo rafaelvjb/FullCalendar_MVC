@@ -4,18 +4,17 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
-using FullCalendar_MVC.Models.Contexto;
 
 namespace FullCalendar_MVC.Controllers
 {
-    public class ProfissionaisController : Controller
+    public class ProfissionaisController : Contoller
     {
-        private AgendaOnlineFc db = new AgendaOnlineFc();
+        //private AgendaOnlineFc db = new AgendaOnlineFc();
 
         // GET: Profissionais
         public async Task<ActionResult> Index()
         {
-            return View(await db.Profissionais.ToListAsync());
+            return View(await Db.Profissionais.ToListAsync());
         }
 
         // GET: Profissionais/Details/5
@@ -25,7 +24,7 @@ namespace FullCalendar_MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Profissional profissional = await db.Profissionais.FindAsync(id);
+            Profissional profissional = await Db.Profissionais.FindAsync(id);
             if (profissional == null)
             {
                 return HttpNotFound();
@@ -44,17 +43,13 @@ namespace FullCalendar_MVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ProfissionalId,Nome")] Profissional profissional)
+        public async Task<ActionResult> Create([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
         {
-            if (ModelState.IsValid)
-            {
-                profissional.ProfissionalId = Guid.NewGuid();
-                db.Profissionais.Add(profissional);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-
-            return View(profissional);
+            if (!ModelState.IsValid) return View(profissional);
+            profissional.ProfissionalId = Guid.NewGuid();
+            Db.Profissionais.Add(profissional);
+            await Db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Profissionais/Edit/5
@@ -64,7 +59,7 @@ namespace FullCalendar_MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Profissional profissional = await db.Profissionais.FindAsync(id);
+            Profissional profissional = await Db.Profissionais.FindAsync(id);
             if (profissional == null)
             {
                 return HttpNotFound();
@@ -77,12 +72,12 @@ namespace FullCalendar_MVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ProfissionalId,Nome")] Profissional profissional)
+        public async Task<ActionResult> Edit([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(profissional).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                Db.Entry(profissional).State = EntityState.Modified;
+                await Db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(profissional);
@@ -95,7 +90,7 @@ namespace FullCalendar_MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Profissional profissional = await db.Profissionais.FindAsync(id);
+            Profissional profissional = await Db.Profissionais.FindAsync(id);
             if (profissional == null)
             {
                 return HttpNotFound();
@@ -108,9 +103,9 @@ namespace FullCalendar_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(Guid id)
         {
-            Profissional profissional = await db.Profissionais.FindAsync(id);
-            db.Profissionais.Remove(profissional);
-            await db.SaveChangesAsync();
+            var profissional = await Db.Profissionais.FindAsync(id);
+            if (profissional != null) Db.Profissionais.Remove(profissional);
+            await Db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -118,7 +113,7 @@ namespace FullCalendar_MVC.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                Db.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -20,6 +20,11 @@
                 @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
             </div>
+            
+            <div class="col-md-6">
+                <label class="control-label">Ativo</label>
+                @Html.CheckBox("Ativo")
+            </div>
         </div>
 
         <div class="form-group">

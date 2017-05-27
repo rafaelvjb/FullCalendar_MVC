@@ -12,20 +12,16 @@ namespace FullCalendar_MVC.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            ViewBag.Profissionais = Db.Profissionais.ToList();
+            // ReSharper disable once RedundantBoolCompare
+            ViewBag.Profissionais = Db.Profissionais
+                                    .Where(p => p.Ativo == true)
+                                    .ToList();
             return View();
         }
 
         //lista todos os eventos
         public JsonResult Eventos(string start, string end, string usuarioId)
         {
-            var listaConvertida = new List<Eventos>();
-            //var inicio = 0;
-            //while (inicio == 0)
-            //{
-            //    return Json(listaConvertida, JsonRequestBehavior.AllowGet);
-            //    inicio++;
-            //}
             var dtInicial = Convert.ToDateTime(start).Date;
             var dtfinal = Convert.ToDateTime(end).Date;
             IQueryable<Eventos> queryable = Db.Eventos;
@@ -35,22 +31,18 @@ namespace FullCalendar_MVC.Controllers
                 queryable = queryable.Where(d => d.ProfissionalId == id);
             }
 
+            queryable = queryable.Where(e => e.Profissional.Ativo == true);
             var lista = queryable.Where(d => d.end < dtfinal && d.start > dtInicial).ToList();
 
-           
             var datafim = new TimeSpan(4, 0, 0);
-            foreach (var item in lista)
-            {
-                var evento = new Eventos
+            var listaConvertida = lista.Select(item => new Eventos
                 {
                     ID = item.ID,
                     title = item.title,
                     start = Convert.ToDateTime(item.start.Subtract(datafim)),
                     end = Convert.ToDateTime(item.end.Subtract(datafim))
-                };
+                }).ToList();
 
-                listaConvertida.Add(evento);
-            }
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
         }
 
@@ -136,6 +128,8 @@ namespace FullCalendar_MVC.Controllers
         public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
+            if (evento == null) return Json(new {message = "Falha ao atualizar eventos"});
+
             evento.ID = id;
             evento.start = Convert.ToDateTime(NewEventStart);
             evento.end = Convert.ToDateTime(NewEventEnd);
@@ -146,18 +140,15 @@ namespace FullCalendar_MVC.Controllers
             var verificaExistencia = Db.Eventos
                 .FirstOrDefault(d => d.start >= evento.start && d.end <= convertido);
 
-            // ReSharper disable once InvertIf
-            if (verificaExistencia == null || evento.ID == verificaExistencia.ID)
-            {
-                if (evento.end >= DateTime.Now)
-                {
-                    Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
-                    Db.SaveChanges();
-                    return Json(new { message = "Sucesso" });
-                }
+            if (verificaExistencia != null && evento.ID != verificaExistencia.ID)
+                return Json(new {message = "Falha ao atualizar eventos"});
+
+            if (evento.end <= DateTime.Now)
                 return Json(new {message = "Não é possivel gravar um evento com a data anterior que a atual"});
-            }
-            return Json(new {message = "Falha ao atualizar eventos"});
+
+            Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+            Db.SaveChanges();
+            return Json(new { message = "Sucesso" });
         }
     }
 }
