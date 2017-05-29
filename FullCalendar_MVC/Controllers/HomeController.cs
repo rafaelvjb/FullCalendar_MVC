@@ -22,6 +22,7 @@ namespace FullCalendar_MVC.Controllers
         //lista todos os eventos
         public JsonResult Eventos(string start, string end, string usuarioId)
         {
+            var listaConvertida = new List<Eventos>();
             var dtInicial = Convert.ToDateTime(start).Date;
             var dtfinal = Convert.ToDateTime(end).Date;
             IQueryable<Eventos> queryable = Db.Eventos;
@@ -35,14 +36,18 @@ namespace FullCalendar_MVC.Controllers
             var lista = queryable.Where(d => d.end < dtfinal && d.start > dtInicial).ToList();
 
             var datafim = new TimeSpan(4, 0, 0);
-            var listaConvertida = lista.Select(item => new Eventos
+            foreach (var item in lista)
+            {
+                var evento = new Eventos
                 {
                     ID = item.ID,
                     title = item.title,
                     start = Convert.ToDateTime(item.start.Subtract(datafim)),
                     end = Convert.ToDateTime(item.end.Subtract(datafim))
-                }).ToList();
+                };
 
+                listaConvertida.Add(evento);
+            }
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
         }
 
@@ -79,7 +84,6 @@ namespace FullCalendar_MVC.Controllers
         //Deleta Evento
         public JsonResult DeletaEvento(int id)
         {
-
             if (id !=  null)
             {
                 var lol= Convert.ToInt32(id);
@@ -120,7 +124,7 @@ namespace FullCalendar_MVC.Controllers
             }
             Db.Eventos.Add(evento);
             Db.SaveChanges();
-            return Json(new {message = "sucess"});
+            return Json(new {message = "Evento salvo com sucesso!"});
             //return RedirectToAction("Index", "Home");
         }
 

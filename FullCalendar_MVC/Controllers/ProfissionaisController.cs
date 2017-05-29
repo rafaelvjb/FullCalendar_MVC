@@ -12,12 +12,14 @@ namespace FullCalendar_MVC.Controllers
         //private AgendaOnlineFc db = new AgendaOnlineFc();
 
         // GET: Profissionais
+        [Authorize]
         public async Task<ActionResult> Index()
         {
             return View(await Db.Profissionais.ToListAsync());
         }
 
         // GET: Profissionais/Details/5
+        [Authorize]
         public async Task<ActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -33,6 +35,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // GET: Profissionais/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
@@ -43,6 +46,7 @@ namespace FullCalendar_MVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Create([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
         {
             if (!ModelState.IsValid) return View(profissional);
