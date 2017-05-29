@@ -42,8 +42,8 @@
                     $('#editEventDate').val($.fullCalendar.formatDate(calEvent.start, 'DD/MM/YYYY'));
                     $('#editEventTime').val($.fullCalendar.formatDate(calEvent.start, 'HH:mm'));
                     $('#editEventDuration').val($.fullCalendar.formatDate(calEvent.end, 'HH:mm'));
-                    $('#profissionalE').val(calEvent.ProfissionalId);
-                    $('#Observacoes').val(calEvent.Observacoes);
+                    $('#profissionalE').val($('#profissional').val());
+                    $('#Observacoes').val($('#observacoes').val());
                     if (confirm("Deseja Editar esta Evento?")) {
                         ModalEditar(calEvent);
                     } else {
@@ -349,7 +349,6 @@
                     <div class="form-group col-md-offset-2">
                         <label class="control-label col-md-8" style="text-align:center;">Profissional</label>
                         <div class="col-md-8">
-
                             @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                            {
                                Text = option.Nome,
