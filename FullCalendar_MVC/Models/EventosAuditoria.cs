@@ -21,6 +21,6 @@ namespace FullCalendar_MVC.Models
         public String className { get; set; }
         public String Observacoes { get; set; }
 
-        //public virtual Profissional Profissional { get; set; }
+        public virtual Profissional Profissional { get; set; }
     }
 }

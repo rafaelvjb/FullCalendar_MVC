@@ -101,6 +101,8 @@ namespace FullCalendar_MVC.Controllers
         {
             var evento = new Eventos();
             evento.title = eventos.Titulo;
+            evento.DataCriacao = DateTime.Now;
+            evento.UsuarioCriacao = HttpContext.User.Identity.Name;
             var data = DateTime.Parse(eventos.DataEvento);
 
             var hora = eventos.HoraEvento.Split(':');

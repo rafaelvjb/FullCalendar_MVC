@@ -237,6 +237,7 @@
     <Compile Include="Models\Identity\UsuarioLogin.cs" />
     <Compile Include="Models\Interfaces\IEntidade.cs" />
     <Compile Include="Models\Profissional.cs" />
+    <Compile Include="Models\ProfissionalAuditoria.cs" />
     <Compile Include="Models\Validacoes\ValidaData.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\ViewModels\EventoViewModel.cs" />
