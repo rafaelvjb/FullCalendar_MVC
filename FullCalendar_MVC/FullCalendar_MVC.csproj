@@ -227,6 +227,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\EventoAuditoria.cs" />
     <Compile Include="Models\Eventos.cs" />
     <Compile Include="Models\Contexto\AgendaOnlineFc.cs" />
     <Compile Include="Models\Identity\Grupo.cs" />

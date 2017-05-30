@@ -84,16 +84,12 @@ namespace FullCalendar_MVC.Controllers
         //Deleta Evento
         public JsonResult DeletaEvento(int id)
         {
-            if (id !=  null)
-            {
-                var lol= Convert.ToInt32(id);
-                var evento = Db.Eventos.FirstOrDefault(e => e.ID == lol);
-                Db.Eventos.Remove(evento);
-                Db.SaveChanges();
-                return Json(new { message = "sucesso" },JsonRequestBehavior.AllowGet);
-            }
-           
-            return Json(new {message = "Problema ao deletar Evento!!!"},JsonRequestBehavior.AllowGet);
+            if (id == null) return Json(new {message = "Problema ao deletar Evento!!!"}, JsonRequestBehavior.AllowGet);
+            var lol= Convert.ToInt32(id);
+            var evento = Db.Eventos.FirstOrDefault(e => e.ID == lol);
+            Db.Eventos.Remove(evento);
+            Db.SaveChanges();
+            return Json(new { message = "sucesso" },JsonRequestBehavior.AllowGet);
         }
 
         //Salva o Evento
@@ -112,6 +108,7 @@ namespace FullCalendar_MVC.Controllers
                 var duracao = int.Parse(eventos.DuracaoEvento);
                 evento.end = evento.start.AddMinutes(duracao);
             }
+
             else
             {
                 evento.end = evento.start.AddMinutes(30);
@@ -131,8 +128,17 @@ namespace FullCalendar_MVC.Controllers
         // Atualiza a duração do evento
         public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
+           
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
-            if (evento == null) return Json(new {message = "Falha ao atualizar eventos"});
+            var eventoAuditoria = new EventoAuditoria();
+            eventoAuditoria.ID = id;
+            eventoAuditoria.Titulo = evento.title;
+            eventoAuditoria.DataAntiga = evento.start;
+            eventoAuditoria.DataNova = Convert.ToDateTime(NewEventStart);
+            eventoAuditoria.UsuarioModificacao = User.Identity.Name;
+            Db.EventoAuditoria.Add(eventoAuditoria);
+            Db.SaveChanges();
+
 
             evento.ID = id;
             evento.start = Convert.ToDateTime(NewEventStart);
@@ -140,7 +146,7 @@ namespace FullCalendar_MVC.Controllers
 
             var tm = new TimeSpan(0, 1, 0);
             var convertido = evento.end.Subtract(tm);
-
+            if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
             var verificaExistencia = Db.Eventos
                 .FirstOrDefault(d => d.start >= evento.start && d.end <= convertido);
 

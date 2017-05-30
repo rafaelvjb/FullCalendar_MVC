@@ -22,6 +22,6 @@ namespace FullCalendar_MVC.Models.Contexto
 
         public DbSet<Profissional> Profissionais { get; set; }
 
-        
+        public DbSet<EventoAuditoria> EventoAuditoria { get; set; }
     }
 }
