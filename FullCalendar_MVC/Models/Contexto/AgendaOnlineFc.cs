@@ -121,7 +121,7 @@ namespace FullCalendar_MVC.Models.Contexto
                     {
                         if (entidade.Property("DataCriacao") != null)
                         {
-                            entidade.Property(nameof(IEntidade<object>.DataCriacao)).CurrentValue = currentTime;
+                            entidade.Property("DataCriacao").CurrentValue = currentTime;
                         }
                         if (entidade.Property("UsuarioCriacao") != null)
                         {

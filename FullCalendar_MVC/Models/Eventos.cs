@@ -28,7 +28,7 @@ namespace FullCalendar_MVC.Models
 
         public DateTime DataCriacao { get; set; }
         public string UsuarioCriacao { get; set; }
-        public DateTime UltimaModificacao { get; set; }
+        public DateTime? UltimaModificacao { get; set; }
         public string UsuarioModificacao { get; set; }
     }
 }

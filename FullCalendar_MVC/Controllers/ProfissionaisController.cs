@@ -47,12 +47,12 @@ namespace FullCalendar_MVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<ActionResult> Create([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
+        public  ActionResult Create([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
         {
             if (!ModelState.IsValid) return View(profissional);
             profissional.ProfissionalId = Guid.NewGuid();
             Db.Profissionais.Add(profissional);
-            await Db.SaveChangesAsync();
+            Db.SaveChanges();
             return RedirectToAction("Index");
         }
 
