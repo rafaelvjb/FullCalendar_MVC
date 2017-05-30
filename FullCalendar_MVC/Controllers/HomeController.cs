@@ -47,7 +47,6 @@ namespace FullCalendar_MVC.Controllers
                     start = Convert.ToDateTime(item.start.Subtract(datafim)),
                     end = Convert.ToDateTime(item.end.Subtract(datafim))
                 };
-
                 listaConvertida.Add(evento);
             }
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
@@ -64,10 +63,6 @@ namespace FullCalendar_MVC.Controllers
             hora = eventos.DuracaoEvento.Split(':');
             datafim = datafim.AddHours(double.Parse(hora[0]));
             var end = datafim.AddMinutes(double.Parse(hora[1]));
-
-            var teste = Db.Eventos
-                .FirstOrDefault(d => d.start >= start && d.end <= end);
-
             var ev = new Eventos()
             {
                 ID = eventos.ID,
@@ -148,7 +143,7 @@ namespace FullCalendar_MVC.Controllers
             if (evento.end <= DateTime.Now)
                 return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
 
-           
+
             Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
             Db.SaveChanges();
             return Json(new { message = "Sucesso" });
@@ -159,34 +154,22 @@ namespace FullCalendar_MVC.Controllers
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
             if (evento == null) return;
-            try
-            {
-                var eventoAuditoria = new EventoAuditoria();
-                eventoAuditoria.EventoAuditoriaId = Guid.NewGuid();
-                eventoAuditoria.Identificacao = id;
-                eventoAuditoria.Titulo = evento.title;
 
-                eventoAuditoria.DataIniAntiga = evento.start;
-                eventoAuditoria.DataFimAntiga= evento.end;
+            var eventoAuditoria = new EventoAuditoria();
+            eventoAuditoria.EventoAuditoriaId = Guid.NewGuid();
+            eventoAuditoria.Identificacao = id;
+            eventoAuditoria.Titulo = evento.title;
 
-                eventoAuditoria.DataIniNova = Convert.ToDateTime(NewEventStart);
-                eventoAuditoria.DataFimNova = Convert.ToDateTime(NewEventEnd);
+            eventoAuditoria.DataIniAntiga = evento.start;
+            eventoAuditoria.DataFimAntiga = evento.end;
 
-                eventoAuditoria.UsuarioModificacao = User.Identity.Name;
-                Db.EventoAuditoria.Add(eventoAuditoria);
-                Db.SaveChanges();
-            }
+            eventoAuditoria.DataIniNova = Convert.ToDateTime(NewEventStart);
+            eventoAuditoria.DataFimNova = Convert.ToDateTime(NewEventEnd);
 
-            catch (SqlException ex)
-            {
-                throw ex;
-            }
+            eventoAuditoria.UsuarioModificacao = User.Identity.Name;
+            Db.EventoAuditoria.Add(eventoAuditoria);
+            Db.SaveChanges();
 
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
     }
 }
