@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using FullCalendar_MVC.Models.Interfaces;
 
 namespace FullCalendar_MVC.Models
 {
-    public class Eventos : IEntidade<EventosAuditoria>
+    public class EventosAuditoria
     {
         [Key]
         public int ID { get; set; }
@@ -20,15 +19,8 @@ namespace FullCalendar_MVC.Models
         public DateTime end { get; set; }
         public int StatusEnum { get; set; }
         public String className { get; set; }
-
         public String Observacoes { get; set; }
 
-        //relacionamento com tabela profissional
         public virtual Profissional Profissional { get; set; }
-
-        public DateTime DataCriacao { get; set; }
-        public string UsuarioCriacao { get; set; }
-        public DateTime? UltimaModificacao { get; set; }
-        public string UsuarioModificacao { get; set; }
     }
 }

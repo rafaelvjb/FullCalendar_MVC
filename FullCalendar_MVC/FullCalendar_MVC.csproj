@@ -230,12 +230,15 @@
     <Compile Include="Models\EventoAuditoria.cs" />
     <Compile Include="Models\Eventos.cs" />
     <Compile Include="Models\Contexto\AgendaOnlineFc.cs" />
+    <Compile Include="Models\EventosAuditoria.cs" />
     <Compile Include="Models\Identity\Grupo.cs" />
     <Compile Include="Models\Identity\Usuario.cs" />
     <Compile Include="Models\Identity\UsuarioGrupo.cs" />
     <Compile Include="Models\Identity\UsuarioIdentificacao.cs" />
     <Compile Include="Models\Identity\UsuarioLogin.cs" />
+    <Compile Include="Models\Interfaces\IEntidade.cs" />
     <Compile Include="Models\Profissional.cs" />
+    <Compile Include="Models\ProfissionalAuditoria.cs" />
     <Compile Include="Models\Validacoes\ValidaData.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\ViewModels\EventoViewModel.cs" />
