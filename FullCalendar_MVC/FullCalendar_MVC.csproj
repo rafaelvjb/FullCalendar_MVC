@@ -227,7 +227,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\EventoAuditoria.cs" />
     <Compile Include="Models\Eventos.cs" />
     <Compile Include="Models\Contexto\AgendaOnlineFc.cs" />
     <Compile Include="Models\EventosAuditoria.cs" />
@@ -239,6 +238,7 @@
     <Compile Include="Models\Interfaces\IEntidade.cs" />
     <Compile Include="Models\Profissional.cs" />
     <Compile Include="Models\ProfissionalAuditoria.cs" />
+    <Compile Include="Models\Validacoes\CustomJsonResult.cs" />
     <Compile Include="Models\Validacoes\ValidaData.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\ViewModels\EventoViewModel.cs" />
@@ -332,6 +332,8 @@
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.maskedinput.js" />
+    <Content Include="Scripts\jquery.maskedinput.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />

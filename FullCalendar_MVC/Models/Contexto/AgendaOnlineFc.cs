@@ -34,62 +34,8 @@ namespace FullCalendar_MVC.Models.Contexto
         public DbSet<EventosAuditoria> EnventoAuditoria { get; set; }
 
         public DbSet<ProfissionalAuditoria> ProfissionalAuditoria { get; set; }
-        //public override int SaveChanges()
-        //{
-        //    try
-        //    {
-        //        var currentTime = DateTime.Now;
 
-        //        foreach (var entry in ChangeTracker.Entries().Where(e => e.Entity != null &&
-        //                                                                 typeof(IEntidade<>).IsAssignableFrom(e.Entity.GetType())))
-        //        {
-        //            if (entry.State == EntityState.Added)
-        //            {
-
-        //                if (entry.Property("DataCriacao") != null)
-        //                {
-        //                    entry.Property("DataCriacao").CurrentValue = currentTime;
-        //                }
-        //                if (entry.Property("UsuarioCriacao") != null)
-        //                {
-        //                    entry.Property("UsuarioCriacao").CurrentValue = HttpContext.Current != null ? HttpContext.Current.User.Identity.Name : "Usuario";
-        //                }
-        //            }
-
-        //            if (entry.State == EntityState.Modified)
-        //            {
-        //                entry.Property("DataCriacao").IsModified = false;
-        //                entry.Property("UsuarioCriacao").IsModified = false;
-
-        //                if (entry.Property("UltimaModificacao") != null)
-        //                {
-        //                    entry.Property("UltimaModificacao").CurrentValue = currentTime;
-        //                }
-        //                if (entry.Property("UsuarioModificacao") != null)
-        //                {
-        //                    entry.Property("UsuarioModificacao").CurrentValue = HttpContext.Current != null ? HttpContext.Current.User.Identity.Name : "Usuario";
-        //                }
-        //            }
-        //        }
-
-        //        return base.SaveChanges();
-        //    }
-        //    catch (DbEntityValidationException ex)
-        //    {
-        //        var errorMessages = ex.EntityValidationErrors
-        //            .SelectMany(x => x.ValidationErrors)
-        //            .Select(x => x.ErrorMessage);
-
-        //        var fullErrorMessage = string.Join("; ", errorMessages);
-
-        //        var exceptionsMessage = string.Concat(ex.Message, "Os erros de validações são: ", fullErrorMessage);
-
-        //        throw new DbEntityValidationException(exceptionsMessage, ex.EntityValidationErrors);
-        //    }
-        //}
-
-
-
+        //Método auditoria espelho
         public override int SaveChanges()
         {
             try
@@ -133,6 +79,7 @@ namespace FullCalendar_MVC.Models.Contexto
                     {
                         entidade.Property("DataCriacao").IsModified = false;
                         entidade.Property("UsuarioCriacao").IsModified = false;
+                       // entidade.Property("ProfissionalId").IsModified = false;
 
                         if (entidade.Property("UltimaModificacao") != null)
                         {

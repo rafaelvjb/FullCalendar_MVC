@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
 using FullCalendar_MVC.Models.ViewModels;
+using Newtonsoft.Json;
 
 namespace FullCalendar_MVC.Controllers
 {
@@ -44,8 +46,8 @@ namespace FullCalendar_MVC.Controllers
                 {
                     ID = item.ID,
                     title = item.title,
-                    start = Convert.ToDateTime(item.start.Subtract(datafim)),
-                    end = Convert.ToDateTime(item.end.Subtract(datafim))
+                    start = Convert.ToDateTime(item.start),
+                    end = Convert.ToDateTime(item.end)
                 };
                 listaConvertida.Add(evento);
             }
@@ -112,6 +114,8 @@ namespace FullCalendar_MVC.Controllers
             {
                 evento.end = evento.start.AddMinutes(30);
             }
+            evento.Consulta = eventos.Consulta;
+            evento.Retorno = eventos.Retorno;
 
             evento.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
             if (evento.start <= DateTime.Now)
@@ -148,6 +152,24 @@ namespace FullCalendar_MVC.Controllers
             Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
             Db.SaveChanges();
             return Json(new { message = "Sucesso" });
+        }
+
+        public JsonResult ObtemPorId(int id)
+        {
+            var eventos = Db.Eventos.FirstOrDefault(e => e.ID == id);
+            var evento = new Eventos
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                ID = eventos.ID,
+                title = eventos.title,
+                start = Convert.ToDateTime(eventos.start),
+                end = Convert.ToDateTime(eventos.end),
+                ProfissionalId = eventos.ProfissionalId,
+                Observacoes = eventos.Observacoes,
+                Consulta = eventos.Consulta,
+                Retorno = eventos.Retorno
+            };
+            return Json(evento, JsonRequestBehavior.AllowGet);
         }
     }
 }

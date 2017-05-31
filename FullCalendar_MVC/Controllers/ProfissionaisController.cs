@@ -57,13 +57,15 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // GET: Profissionais/Edit/5
-        public async Task<ActionResult> Edit(Guid? id)
+        public ActionResult Edit(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Profissional profissional = await Db.Profissionais.FindAsync(id);
+
+            Profissional profissional =  Db.Profissionais.Find(id);
+
             if (profissional == null)
             {
                 return HttpNotFound();
@@ -76,25 +78,25 @@ namespace FullCalendar_MVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
+        public ActionResult Edit([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
         {
             if (ModelState.IsValid)
             {
                 Db.Entry(profissional).State = EntityState.Modified;
-                await Db.SaveChangesAsync();
+                Db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(profissional);
         }
 
         // GET: Profissionais/Delete/5
-        public async Task<ActionResult> Delete(Guid? id)
+        public ActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Profissional profissional = await Db.Profissionais.FindAsync(id);
+            Profissional profissional =  Db.Profissionais.Find(id);
             if (profissional == null)
             {
                 return HttpNotFound();
@@ -105,11 +107,11 @@ namespace FullCalendar_MVC.Controllers
         // POST: Profissionais/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(Guid id)
+        public  ActionResult DeleteConfirmed(Guid id)
         {
-            var profissional = await Db.Profissionais.FindAsync(id);
+            var profissional =  Db.Profissionais.Find(id);
             if (profissional != null) Db.Profissionais.Remove(profissional);
-            await Db.SaveChangesAsync();
+            Db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
