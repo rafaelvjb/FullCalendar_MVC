@@ -17,7 +17,6 @@
             });
         });
     </script>
-    
     <script>
         var CalLoading = true;
         //Carregamento do calendário e eventos
@@ -66,21 +65,43 @@
                     });
                 },
                 eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
-                    if (confirm("Confirma a Mudança?")) {
-                        UpdateEvent(event.ID, event.start, event.end);
+                    swal({
+                        title: "Alterar Evento",
+                        type: "info",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        showLoaderOnConfirm: true,
+                    },
 
-                    } else {
-                        revertFunc();
-                    }
+             function () {
+                 setTimeout(function () {
+                     swal("Alterado com sucesso");
+                 }, 2000);
+             });
+
                 },
 
                 eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
+                    UpdateEvent(event.ID, event.start, event.end);
                     //$('#ModalConfirma').modal('show');
-                    if (confirm("Deseja Alterar o horario deste evento?")) {
-                        UpdateEvent(event.ID, event.start, event.end);
-                    } else {
-                        revertFunc();
-                    }
+                    //if (
+
+                    //    confirm("Deseja Alterar o horario deste evento?")) {
+                    //    UpdateEvent(event.ID, event.start, event.end);
+                    //} else {
+                    //    revertFunc();
+                    //}
+                    //swal({
+                    //    title: "Alterar Evento",
+                    //    text: "Alterando",
+                    //    type: "info",
+                    //    showCancelButton: true,
+                    //    closeOnConfirm: false,
+                    //    showLoaderOnConfirm: true,
+                    //},
+                    //function () {
+
+                    //});
                 },
 
                 dayClick: function (date, allDay, jsEvent, view) {
@@ -127,6 +148,7 @@
             ClearPopupFormValues();
             $('#popupEventForm').hide();
         });
+
         //Função em um botão do modal para deletar evento
         $('#BtnDeletaEvento').click(function () {
             $('#ModalEditar').hide();
@@ -137,11 +159,20 @@
                 data: { id: JSON.stringify(idd) },
                 success: function (response) {
                     if (response.message == 'sucesso') {
-                        alert('Evento Excluido com sucesso!!!');
-                        location.reload();
+                        swal({
+                            title: 'Evento Excluido com sucesso!!!',
+                            //text: "You will not be able to recover this imaginary file!",
+                            type: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        }, function () {
+                            location.reload();
+                        });
+
+
                         $('#ModalEditar').hide();
                     } else {
-                        alert('Erro, algo');
+                        swal('Erro, algo');
                     }
                 }
             });
@@ -153,10 +184,16 @@
                 var form = document.getElementById("formCliente");
                 var data = $(form).serialize();
                 $.post(form.action, data, function (response) {
-                    if (response.message === 'sucesso') {
-                        alert('Evento salvo com sucesso!!!');
+                    if (response.message === 'Evento salvo com sucesso!!!') {
+                        swal({
+                            title: 'Evento salvo com sucesso!!!',
+                            text: "You will not be able to recover this imaginary file!",
+                            type: "success",
+                            timer: 8000,
+                            showConfirmButton: false
+                        });
                     } else {
-                        alert(response.message);
+                        swal(response.message)
                         $('#ModalAdicionar').hide();
                         location.reload();
                     }
@@ -210,10 +247,15 @@
                 data: JSON.stringify(dataRow),
                 success: function (response) {
                     if (response.message === 'Sucesso') {
-                        alert('Modificado com sucesso!!!');
+                        swal({
+                            title: 'Modificado com sucesso!!!',
+                            type: 'success',
+                            timer: 15000,
+                            showConfirmButton: false
+                        });
                         location.reload();
                     } else {
-                        alert(response.message);
+                        swal(response.message, '', 'error');
                         location.reload();
                     }
                 }
@@ -251,20 +293,20 @@
     <div class="col-md-3">
         @using (Html.BeginForm("Index", "Home"))
         {
-            <div class="row" style="padding-top:20px">
-                <h4 style="text-align:center;padding-left:30px">Filtro por Profissional</h4>
+        <div class="row" style="padding-top:20px">
+            <h4 style="text-align:center;padding-left:30px">Filtro por Profissional</h4>
 
-                <div class="form-group">
-                    <div class="col-md-12 col-md-offset-1">
-                        @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+            <div class="form-group">
+                <div class="col-md-12 col-md-offset-1">
+                    @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                    {
                        Text = option.Nome,
                        Value = option.ProfissionalId.ToString(),
                        Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                    }), "Selecione", new { id = "profissionalM", @class = "form-control" })
-                    </div>
                 </div>
             </div>
+        </div>
         }
     </div>
 
@@ -285,50 +327,50 @@
 
                 @using (Html.BeginForm("SalvaEvento", "Home", FormMethod.Post, new { id = "formCliente" }))
                 {
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-6">
-                            <label class="control-label">Nome Completo</label>
-                            <input id="eventTitle" type="text" name="Titulo" class="form-control" />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="control-label col-md-2">Profissional</label>
-                            @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-6">
+                                <label class="control-label">Nome Completo</label>
+                                <input id="eventTitle" type="text" name="Titulo" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Profissional</label>
+                                @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                            {
                                Text = option.Nome,
                                Value = option.ProfissionalId.ToString(),
                                Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                            }), "Selecione", new { id = "profissional", @class = "form-control", required = "required" })
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 col-md-offset-2" style="padding-top:20px;">
-                                <label class="control-label">Consulta</label>
-                                @Html.CheckBox("Consulta")
                             </div>
 
-                            <div class="col-md-4 col-md-offset-2" style="padding-top:20px;">
-                                <label class="control-label">Retorno</label>
-                                @Html.CheckBox("Retorno")
-                            </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-md-4 col-md-offset-2" style="padding-top:20px;">
+                                    <label class="control-label">Consulta</label>
+                                    @Html.CheckBox("Consulta")
+                                </div>
 
-                        <div class="row">
-                            <div class="col-md-10 col-md-offset-1" style="padding-top:15px;">
-                                <label for="comment" class="col-md-offset-5">Observações:</label>
-                                <textarea class="form-control" name="Observacoes" rows="5" id="comment"></textarea>
+                                <div class="col-md-4 col-md-offset-2" style="padding-top:20px;">
+                                    <label class="control-label">Retorno</label>
+                                    @Html.CheckBox("Retorno")
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-offset-5 col-md-8" style="padding-top: 30px;">
-                            <input type="submit" value="Salvar" class="btn btn-default" style="text-align:center" />
+
+                            <div class="row">
+                                <div class="col-md-10 col-md-offset-1" style="padding-top:15px;">
+                                    <label for="comment" class="col-md-offset-5">Observações:</label>
+                                    <textarea class="form-control" name="Observacoes" rows="5" id="comment"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-5 col-md-8" style="padding-top: 30px;">
+                                <input type="submit" value="Salvar" class="btn btn-default" style="text-align:center" />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <input id="eventTime" type="text" name="HoraEvento" class="form-control" style="display:none" />
-                <input type="text" name="DuracaoEvento" class="form-control" style="display:none" />
+                    <input id="eventTime" type="text" name="HoraEvento" class="form-control" style="display:none" />
+                    <input type="text" name="DuracaoEvento" class="form-control" style="display:none" />
 
 
-                <input id="eventDate" type="text" name="DataEvento" class="form-control" style="display: none" />
+                    <input id="eventDate" type="text" name="DataEvento" class="form-control" style="display: none" />
 
                 }
             </div>
@@ -399,11 +441,11 @@
                             <label class="control-label col-md-8" style="text-align: center;">Profissional</label>
                             <div class="col-md-8">
                                 @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
-                       {
-                           Text = option.Nome,
-                           Value = option.ProfissionalId.ToString(),
-                           Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
-                       }), "Selecione", new { id = "profissionalE", @class = "form-control", required = "required" })
+                           {
+                               Text = option.Nome,
+                               Value = option.ProfissionalId.ToString(),
+                               Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+                           }), "Selecione", new { id = "profissionalE", @class = "form-control", required = "required" })
                             </div>
                         </div>
                     </div>

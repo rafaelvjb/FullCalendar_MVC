@@ -258,6 +258,9 @@
     <Content Include="Content\fullcalendar.print.css" />
     <Content Include="Content\Money.png" />
     <Content Include="Content\ok.png" />
+    <Content Include="Content\sweetalert\dist\sweetalert-dev.js" />
+    <Content Include="Content\sweetalert\dist\sweetalert.css" />
+    <Content Include="Content\sweetalert\dist\sweetalert.min.js" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
