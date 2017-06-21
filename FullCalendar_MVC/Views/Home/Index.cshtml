@@ -64,6 +64,8 @@
                         }
                     });
                 },
+
+
                 eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
                     swal({
                         title: "Alterar Evento",
@@ -80,28 +82,8 @@
              });
 
                 },
-
                 eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
                     UpdateEvent(event.ID, event.start, event.end);
-                    //$('#ModalConfirma').modal('show');
-                    //if (
-
-                    //    confirm("Deseja Alterar o horario deste evento?")) {
-                    //    UpdateEvent(event.ID, event.start, event.end);
-                    //} else {
-                    //    revertFunc();
-                    //}
-                    //swal({
-                    //    title: "Alterar Evento",
-                    //    text: "Alterando",
-                    //    type: "info",
-                    //    showCancelButton: true,
-                    //    closeOnConfirm: false,
-                    //    showLoaderOnConfirm: true,
-                    //},
-                    //function () {
-
-                    //});
                 },
 
                 dayClick: function (date, allDay, jsEvent, view) {
@@ -168,8 +150,6 @@
                         }, function () {
                             location.reload();
                         });
-
-
                         $('#ModalEditar').hide();
                     } else {
                         swal('Erro, algo');
@@ -177,6 +157,7 @@
                 }
             });
         });
+
         //Função que serializa o formulário e envia para o controller por ajax
         $(function () {
             $("#formCliente input[type=submit]").click(function (event) {
@@ -184,13 +165,15 @@
                 var form = document.getElementById("formCliente");
                 var data = $(form).serialize();
                 $.post(form.action, data, function (response) {
-                    if (response.message === 'Evento salvo com sucesso!!!') {
+                    if (response.message === 'Evento salvo com sucesso!') {
                         swal({
                             title: 'Evento salvo com sucesso!!!',
-                            text: "You will not be able to recover this imaginary file!",
+                            //text: "You will not be able to recover this imaginary file!",
                             type: "success",
-                            timer: 8000,
+                            timer: 2000,
                             showConfirmButton: false
+                        }, function () {
+                            location.reload();
                         });
                     } else {
                         swal(response.message)
@@ -199,7 +182,13 @@
                     }
                 });
             });
+          
         });
+
+        $(function () {
+
+        })
+
         //função que chama o ModalAdicionar
         function ModalAdicionar(date) {
             ClearPopupFormValues();
@@ -248,10 +237,12 @@
                 success: function (response) {
                     if (response.message === 'Sucesso') {
                         swal({
-                            title: 'Modificado com sucesso!!!',
-                            type: 'success',
-                            timer: 15000,
-                            showConfirmButton: false
+                            title: "Alterar Evento",
+                            text: "Alterando",
+                            type: "info",
+                            showCancelButton: true,
+                            closeOnConfirm: false,
+                            showLoaderOnConfirm: true,
                         });
                         location.reload();
                     } else {
@@ -263,7 +254,6 @@
         }
 
         function DeleteEvent(EventID, EventStart, EventEnd) {
-
             var dataRow = {
                 'ID': EventID,
                 'NewEventStart': EventStart,
@@ -288,6 +278,7 @@
         });
     </script>
 }
+
 <!--Filtro por Profissional-->
 <div class="row" style="padding-top:15px;">
     <div class="col-md-3">
@@ -368,8 +359,6 @@
                     </div>
                     <input id="eventTime" type="text" name="HoraEvento" class="form-control" style="display:none" />
                     <input type="text" name="DuracaoEvento" class="form-control" style="display:none" />
-
-
                     <input id="eventDate" type="text" name="DataEvento" class="form-control" style="display: none" />
 
                 }
