@@ -9,7 +9,7 @@
 
 @section scripts{
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             jQuery(function ($) {
                 $("#editEventDate").mask("99/99/9999");
                 $("#campoTelefone").mask("(999) 999-9999");
@@ -65,22 +65,23 @@
                     });
                 },
 
-
                 eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
-                    swal({
-                        title: "Alterar Evento",
-                        type: "info",
-                        showCancelButton: true,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true,
-                    },
-
-             function () {
-                 setTimeout(function () {
-                     swal("Alterado com sucesso");
-                 }, 2000);
-             });
-
+                    UpdateEvent(event.ID, event.start, event.end);
+                    //swal({
+                    //    title: "Ajax request example",
+                    //    text: "Submit to run ajax request",
+                    //    type: "info",
+                    //    showCancelButton: true,
+                    //    closeOnConfirm: false,
+                    //    showLoaderOnConfirm: true,
+                    //},
+                    //function () {
+                    //    UpdateEvent(event.ID, event.start, event.end);
+                    //    setTimeout(function(){
+                    //        swal("Movido com sucesso!!!");
+                    //    }, 4000);
+                    //   // location.reload();
+                    //});
                 },
                 eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
                     UpdateEvent(event.ID, event.start, event.end);
@@ -175,14 +176,15 @@
                         }, function () {
                             location.reload();
                         });
-                    } else {
+                    }
+                    else {
                         swal(response.message)
                         $('#ModalAdicionar').hide();
                         location.reload();
                     }
                 });
             });
-          
+
         });
 
         $(function () {
@@ -236,16 +238,11 @@
                 data: JSON.stringify(dataRow),
                 success: function (response) {
                     if (response.message === 'Sucesso') {
-                        swal({
-                            title: "Alterar Evento",
-                            text: "Alterando",
-                            type: "info",
-                            showCancelButton: true,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true,
-                        });
-                        location.reload();
-                    } else {
+                        swal("Modificado com sucesso")
+                        setTimeout(function(){
+                            location.reload();
+                        },1000)
+                        } else {
                         swal(response.message, '', 'error');
                         location.reload();
                     }
@@ -284,26 +281,27 @@
     <div class="col-md-3">
         @using (Html.BeginForm("Index", "Home"))
         {
-        <div class="row" style="padding-top:20px">
-            <h4 style="text-align:center;padding-left:30px">Filtro por Profissional</h4>
+            <div class="row" style="padding-top:20px">
+                <h4 style="text-align:center;padding-left:30px">Filtro por Profissional</h4>
 
-            <div class="form-group">
-                <div class="col-md-12 col-md-offset-1">
-                    @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                <div class="form-group">
+                    <div class="col-md-12 col-md-offset-1">
+                        @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                    {
                        Text = option.Nome,
                        Value = option.ProfissionalId.ToString(),
                        Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                    }), "Selecione", new { id = "profissionalM", @class = "form-control" })
+                    </div>
                 </div>
             </div>
-        </div>
         }
     </div>
 
     <div class="col-md-9">
         <div id="calendar"></div>
     </div>
+
 </div>
 
 <!--Modal Adicionar-->
