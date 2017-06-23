@@ -131,6 +131,18 @@ namespace FullCalendar_MVC.Controllers
         // Atualiza a duração do evento
         public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
+            //var data = Convert.ToDateTime(NewEventStart);
+            //data.AddHours(2);
+            //var hora = eventos.HoraEvento.Split(':');
+            // data = data.AddHours(double.Parse(hora[0]));
+            //var start = data.AddMinutes(double.Parse(hora[1]));
+
+            //var datafim = Convert.ToDateTime(NewEventEnd);//DateTime.Parse(NewEventEnd);
+            //datafim.AddHours(2);
+            //hora = eventos.DuracaoEvento.Split(':');
+            //datafim = datafim.AddHours(double.Parse(hora[0]));
+            //var end = datafim.AddMinutes(double.Parse(hora[1]));
+
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
             evento.ID = id;
             evento.start = Convert.ToDateTime(NewEventStart);
@@ -139,10 +151,11 @@ namespace FullCalendar_MVC.Controllers
             var tm = new TimeSpan(0, 1, 0);
             var convertido = evento.end.Subtract(tm);
             if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
-            var verificaExistencia = Db.Eventos
-                .FirstOrDefault(d => d.start >= evento.start && d.end <= convertido);
 
-            if (verificaExistencia != null && evento.ID != verificaExistencia.ID)
+            var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
+
+            //&& evento.ID != verificaExistencia.ID
+            if (verificaExistencia != null )
                 return Json(new { message = "Falha ao atualizar eventos" });
 
             if (evento.end <= DateTime.Now)

@@ -237,15 +237,34 @@
                 contentType: "application/json",
                 data: JSON.stringify(dataRow),
                 success: function (response) {
-                    if (response.message === 'Sucesso') {
-                        swal("Modificado com sucesso")
-                        setTimeout(function(){
-                            location.reload();
-                        },1000)
-                        } else {
-                        swal(response.message, '', 'error');
-                        location.reload();
-                    }
+                    switch(response.message){
+                        case "Sucesso":
+                            swal("Modificado com sucesso","","success")
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                            break;
+                        case "Falha ao atualizar eventos":
+                            swal("Falha ao atualizar eventos","", "error")
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                            break;
+
+                            default:""
+                        }
+
+
+
+                    //if (response.message === 'Sucesso') {
+                    //    swal("Modificado com sucesso")
+                    //    setTimeout(function(){
+                    //        location.reload();
+                    //    },1000)
+                    //    } else {
+                    //    swal(response.message, '', 'error');
+                    //    location.reload();
+                    //}
                 }
             });
         }

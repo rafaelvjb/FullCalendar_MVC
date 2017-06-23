@@ -116,5 +116,7 @@ namespace FullCalendar_MVC.Models.Contexto
                 throw new DbEntityValidationException(exceptionsMessage, ex.EntityValidationErrors);
             }
         }
+
+        public System.Data.Entity.DbSet<FullCalendar_MVC.Models.Convenio> Convenios { get; set; }
     }
 }
