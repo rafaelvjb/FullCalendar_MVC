@@ -6,6 +6,9 @@ namespace FullCalendar_MVC.Models.ViewModels
     public class EventoViewModel
     {
         public int ID { get; set; }
+
+        public Guid ConvenioId { get; set; }
+
         [Required]
         public String Titulo { get; set; }
 

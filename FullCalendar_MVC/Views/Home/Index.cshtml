@@ -237,22 +237,22 @@
                 contentType: "application/json",
                 data: JSON.stringify(dataRow),
                 success: function (response) {
-                    switch(response.message){
+                    switch (response.message) {
                         case "Sucesso":
-                            swal("Modificado com sucesso","","success")
+                            swal("Modificado com sucesso", "", "success")
                             setTimeout(function () {
                                 location.reload();
                             }, 1000);
                             break;
                         case "Falha ao atualizar eventos":
-                            swal("Falha ao atualizar eventos","", "error")
+                            swal("Falha ao atualizar eventos", "", "error")
                             setTimeout(function () {
                                 location.reload();
                             }, 1000);
                             break;
 
-                            default:""
-                        }
+                        default: ""
+                    }
 
 
 
@@ -329,7 +329,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Adicionar Evento</h4>
+                <h4 class="modal-title" id="myModalLabel"stye>Adicionar Evento</h4>
             </div>
             <div class="modal-body">
 
@@ -351,15 +351,31 @@
                            }), "Selecione", new { id = "profissional", @class = "form-control", required = "required" })
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-4 col-md-offset-2" style="padding-top:20px;">
-                                    <label class="control-label">Consulta</label>
-                                    @Html.CheckBox("Consulta")
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-6" style="padding-top:20px; padding-left:30px">
+                                    <ul style="list-style-type:none;">
+                                        <li>
+                                            <label class="control-label">Consulta</label>
+                                            @Html.CheckBox("Consulta")
+                                        </li>
+
+                                        <li>
+                                            <label class="control-label" style="padding-right:6.5px">Retorno</label>
+                                            @Html.CheckBox("Retorno")
+                                        </li>
+                                    </ul>
                                 </div>
 
-                                <div class="col-md-4 col-md-offset-2" style="padding-top:20px;">
-                                    <label class="control-label">Retorno</label>
-                                    @Html.CheckBox("Retorno")
+                                <div class="col-md-6" style="padding-top:10px;">
+                                    <label class="control-label col-md-2">Convenios</label>
+                                    @Html.DropDownListFor(model => model.ConvenioId, ((IEnumerable<Convenio>)ViewBag.Convenios).Select(option => new SelectListItem
+                           {
+                               Text = option.Nome,
+                               Value = option.ConvenioId.ToString(),
+                               Selected = (Model != null) && (option.ConvenioId == Model.ConvenioId)
+                           }), "Selecione", new { id = "profissional", @class = "form-control", required = "required" })
                                 </div>
                             </div>
 

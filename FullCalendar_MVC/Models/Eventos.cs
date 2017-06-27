@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using FullCalendar_MVC.Models.Interfaces;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace FullCalendar_MVC.Models
 {
@@ -28,10 +29,8 @@ namespace FullCalendar_MVC.Models
 
         public String Observacoes { get; set; }
 
+        //relacionamnto com tabela convenio e profissional
         public virtual Convenio Convenio { get; set; }
-
-        //relacionamento com tabela profissional
-        [JsonIgnore]
         public virtual Profissional Profissional { get; set; }
 
         public DateTime DataCriacao { get; set; }

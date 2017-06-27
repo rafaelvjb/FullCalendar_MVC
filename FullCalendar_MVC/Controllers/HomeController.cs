@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Validation;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
 using FullCalendar_MVC.Models.ViewModels;
-using Newtonsoft.Json;
 
 namespace FullCalendar_MVC.Controllers
 {
@@ -20,6 +16,9 @@ namespace FullCalendar_MVC.Controllers
             ViewBag.Profissionais = Db.Profissionais
                 .Where(p => p.Ativo == true)
                 .ToList();
+
+            ViewBag.Convenios = Db.Convenio
+               .ToList();
             return View();
         }
 
@@ -42,13 +41,24 @@ namespace FullCalendar_MVC.Controllers
             var datafim = new TimeSpan(4, 0, 0);
             foreach (var item in lista)
             {
+                string valor;
+                if (item.Consulta)
+                {
+                    valor = "Consulta";
+                }
+                else
+                {
+                    valor = "Retorno";
+                }
+
                 var evento = new Eventos
                 {
                     ID = item.ID,
-                    title = item.title,
+                    title = $"{item.title} {" - "} {valor} {" - "} {item.Convenio.Nome.ToString()}",
                     start = Convert.ToDateTime(item.start),
                     end = Convert.ToDateTime(item.end)
                 };
+
                 listaConvertida.Add(evento);
             }
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
@@ -98,6 +108,7 @@ namespace FullCalendar_MVC.Controllers
             evento.title = eventos.Titulo;
             evento.DataCriacao = DateTime.Now;
             evento.UsuarioCriacao = HttpContext.User.Identity.Name;
+          
             var data = DateTime.Parse(eventos.DataEvento);
 
             var hora = eventos.HoraEvento.Split(':');
@@ -118,6 +129,8 @@ namespace FullCalendar_MVC.Controllers
             evento.Retorno = eventos.Retorno;
 
             evento.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
+            evento.ConvenioId = eventos.ConvenioId;
+
             if (evento.start <= DateTime.Now)
             {
                 return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
@@ -131,18 +144,6 @@ namespace FullCalendar_MVC.Controllers
         // Atualiza a duração do evento
         public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
-            //var data = Convert.ToDateTime(NewEventStart);
-            //data.AddHours(2);
-            //var hora = eventos.HoraEvento.Split(':');
-            // data = data.AddHours(double.Parse(hora[0]));
-            //var start = data.AddMinutes(double.Parse(hora[1]));
-
-            //var datafim = Convert.ToDateTime(NewEventEnd);//DateTime.Parse(NewEventEnd);
-            //datafim.AddHours(2);
-            //hora = eventos.DuracaoEvento.Split(':');
-            //datafim = datafim.AddHours(double.Parse(hora[0]));
-            //var end = datafim.AddMinutes(double.Parse(hora[1]));
-
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
             evento.ID = id;
             evento.start = Convert.ToDateTime(NewEventStart);
@@ -155,7 +156,7 @@ namespace FullCalendar_MVC.Controllers
             var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
 
             //&& evento.ID != verificaExistencia.ID
-            if (verificaExistencia != null )
+            if (verificaExistencia != null)
                 return Json(new { message = "Falha ao atualizar eventos" });
 
             if (evento.end <= DateTime.Now)

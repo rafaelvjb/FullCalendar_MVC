@@ -27,6 +27,10 @@ namespace FullCalendar_MVC.Models.Contexto
             return new AgendaOnlineFc();
         }
 
+        public DbSet<Convenio> Convenio { get; set; }
+
+        public DbSet<ConvenioAuditoria> ConvenioAuditoria { get; set; }
+
         public DbSet<Eventos> Eventos { get; set; }
 
         public DbSet<Profissional> Profissionais { get; set; }
@@ -79,8 +83,7 @@ namespace FullCalendar_MVC.Models.Contexto
                     {
                         entidade.Property("DataCriacao").IsModified = false;
                         entidade.Property("UsuarioCriacao").IsModified = false;
-                       // entidade.Property("ProfissionalId").IsModified = false;
-
+                       
                         if (entidade.Property("UltimaModificacao") != null)
                         {
                             entidade.Property("UltimaModificacao").CurrentValue = currentTime;
@@ -100,7 +103,7 @@ namespace FullCalendar_MVC.Models.Contexto
             }
             catch (DbUpdateException ex)
             {
-                throw ex;
+               throw ex;
             }
 
             catch (DbEntityValidationException ex)
@@ -117,6 +120,6 @@ namespace FullCalendar_MVC.Models.Contexto
             }
         }
 
-        public System.Data.Entity.DbSet<FullCalendar_MVC.Models.Convenio> Convenios { get; set; }
+        //public DbSet<Convenio> Convenios { get; set; }
     }
 }

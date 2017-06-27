@@ -237,6 +237,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Convenio.cs" />
+    <Compile Include="Models\ConvenioAuditoria.cs" />
     <Compile Include="Models\Eventos.cs" />
     <Compile Include="Models\Contexto\AgendaOnlineFc.cs" />
     <Compile Include="Models\EventosAuditoria.cs" />

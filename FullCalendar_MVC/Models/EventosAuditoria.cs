@@ -8,6 +8,7 @@ namespace FullCalendar_MVC.Models
         [Key]
         public int ID { get; set; }
         public Guid ProfissionalId { get; set; }
+        public Guid ConvenioId { get; set; }
 
         [Required(ErrorMessage = "O Nome não pode ser em branco!")]
         [StringLength(50, ErrorMessage = "Maximo de 30 caracteres!")]
@@ -21,6 +22,7 @@ namespace FullCalendar_MVC.Models
         public String className { get; set; }
         public String Observacoes { get; set; }
 
+        public virtual  Convenio Convenio { get; set; }
         public virtual Profissional Profissional { get; set; }
     }
 }
