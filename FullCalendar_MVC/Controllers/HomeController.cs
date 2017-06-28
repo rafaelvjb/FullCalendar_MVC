@@ -81,6 +81,7 @@ namespace FullCalendar_MVC.Controllers
                 title = eventos.Titulo,
                 start = start,
                 end = end,
+                ConvenioId = eventos.ConvenioId,
                 ProfissionalId = Guid.Parse(eventos.ProfissionalId),
                 Observacoes = eventos.Observacoes
             };
@@ -156,7 +157,7 @@ namespace FullCalendar_MVC.Controllers
             var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
 
             //&& evento.ID != verificaExistencia.ID
-            if (verificaExistencia != null)
+            if (verificaExistencia != null && verificaExistencia.ID != id)
                 return Json(new { message = "Falha ao atualizar eventos" });
 
             if (evento.end <= DateTime.Now)

@@ -31,7 +31,7 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-                defaultView: 'agendaWeek',
+                defaultView: 'agendaDay',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
@@ -251,20 +251,15 @@
                             }, 1000);
                             break;
 
+                        case "Não é possivel gravar um evento com a data anterior que a atual":
+                            swal("Não é possivel gravar um evento com a data anterior que a atual", "", "error")
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                            break;
+
                         default: ""
                     }
-
-
-
-                    //if (response.message === 'Sucesso') {
-                    //    swal("Modificado com sucesso")
-                    //    setTimeout(function(){
-                    //        location.reload();
-                    //    },1000)
-                    //    } else {
-                    //    swal(response.message, '', 'error');
-                    //    location.reload();
-                    //}
                 }
             });
         }
@@ -460,14 +455,25 @@
                     <div class="row" style="padding-top: 20px;">
                         <div class="form-group col-md-offset-3">
                             <!-- Profissional Id -->
-                            <label class="control-label col-md-8" style="text-align: center;">Profissional</label>
-                            <div class="col-md-8">
+                            
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Profissional</label>
                                 @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
                            {
                                Text = option.Nome,
                                Value = option.ProfissionalId.ToString(),
                                Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
                            }), "Selecione", new { id = "profissionalE", @class = "form-control", required = "required" })
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Profissional</label>
+                                @Html.DropDownListFor(model => model.ConvenioId, ((IEnumerable<Convenio>)ViewBag.Convenios).Select(option => new SelectListItem
+                           {
+                               Text = option.Nome,
+                               Value = option.ConvenioId.ToString(),
+                               Selected = (Model != null) && (option.ConvenioId == Model.ProfissionalId)
+                           }), "Selecione", new { id = "convenioE", @class = "form-control", required = "required" })
                             </div>
                         </div>
                     </div>
@@ -478,7 +484,6 @@
                         <label class="control-label">Observações:</label>
                         <textarea class="form-control" name="Observacoes" rows="5" id="Observacoes"></textarea>
                     </div>
-
                     <div class="row">
                         <div>
                             <div class="modal-footer col-md-8 col-md-offset-2" style="text-align: center;padding-top:10px;">
