@@ -14,7 +14,7 @@
     <script src="~/Scripts/fullcalendar.js"></script>
     <script src="~/Scripts/locale/pt.js"></script>
     <script src="~/Scripts/jquery.maskedinput.min.js"></script>
-    
+
     <script src="~/Content/sweetalert/dist/sweetalert.min.js"></script>
     <link href="~/Content/sweetalert/dist/sweetalert.css" rel="stylesheet" />
 </head>
@@ -28,13 +28,27 @@
                     <span class="icon-bar"></span>
                 </button>
                 <!--Html.ActionLink("Vendas de Títulos", "Index", "Home", new { area = "" }, new { class = "navbar-brand" })-->
-                <img src="~/fonts/Images/logofooter.png" style="padding-right:40px;padding-top:6px;"/>
+                <img src="~/fonts/Images/logofooter.png" style="padding-right:40px;padding-top:6px;" />
             </div>
             <div class="navbar-collapse collapse">
 
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Profissionais", "Index", "Profissionais")</li>
+                    
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cadastros<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Profissionais","Index","Profissionais")
+                            <li>@Html.ActionLink("Convenios", "Index", "Convenios")</li>
+                            @*<li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Separated link</a></li>*@
+                        </ul>
+                    
+                </li>
+
+
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>

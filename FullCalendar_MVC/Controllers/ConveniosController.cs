@@ -59,7 +59,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // GET: Convenios/Edit/5
-        public async Task<ActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
