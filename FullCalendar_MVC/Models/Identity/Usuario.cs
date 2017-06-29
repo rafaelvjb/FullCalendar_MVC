@@ -18,7 +18,6 @@ namespace FullCalendar_MVC.Models.Identity
             return userIdentity;
         }
 
-        //Relacionamento com tabela Cliente
-        //public ICollection<Cliente> Clientes { get; set; }
+        public bool Filtrado { get; set; }
     }
 }

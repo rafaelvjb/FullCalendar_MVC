@@ -61,6 +61,7 @@ namespace FullCalendar_MVC.Models.ViewModels
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
     }
 
     public class RegisterViewModel
@@ -82,6 +83,9 @@ namespace FullCalendar_MVC.Models.ViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Filtrar por Usuário")]
+        public bool Filtrado { get; set; }
     }
 
     public class ResetPasswordViewModel

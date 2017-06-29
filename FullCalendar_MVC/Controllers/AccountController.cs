@@ -153,7 +153,7 @@ namespace FullCalendar_MVC.Controllers
             {
                 var lista = Db.Roles.SingleOrDefault(l => l.Id == model.Grupo.Id);
 
-                var user = new Usuario { Id = Guid.NewGuid(), UserName = model.Email, Email = model.Email };
+                var user = new Usuario { Id = Guid.NewGuid(), UserName = model.Email, Email = model.Email, Filtrado = model.Filtrado };
 
                 var result = await UserManager.CreateAsync(user, model.Password);
 
