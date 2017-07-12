@@ -50,8 +50,7 @@ namespace FullCalendar_MVC.Models.ViewModels
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
+        [Display(Name = "Usuario")]
         public string Email { get; set; }
 
         [Required]
@@ -61,15 +60,14 @@ namespace FullCalendar_MVC.Models.ViewModels
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-
     }
 
     public class RegisterViewModel
     {
+
         [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "Nome de Usuário")]
+        public string Username { get; set; }
 
         public Grupo Grupo { get; set; }
 
@@ -84,8 +82,8 @@ namespace FullCalendar_MVC.Models.ViewModels
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [Display(Name = "Filtrar por Usuário")]
-        public bool Filtrado { get; set; }
+        //[Display(Name = "Filtrar por Usuário")]
+        //public bool Filtrado { get; set; }
     }
 
     public class ResetPasswordViewModel
