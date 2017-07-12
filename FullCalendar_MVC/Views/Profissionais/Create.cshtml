@@ -4,32 +4,37 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Criar</h2>
+<h2 style="text-align: center">Cadastrar Profissional</h2>
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
     
-    <div class="form-horizontal">
-        <h4>Profissional</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-4">
-                @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
-            </div>
-            
-            <div class="col-md-6">
-                <label class="control-label">Ativo</label>
-                @Html.CheckBox("Ativo")
-            </div>
-        </div>
+    <div class="form-horizontal col-md-offset-2">
+        <div class="row">
+            <div class="col-md-8">
+                <hr/>
+                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+                <div class="form-group">
+                    <div class="col-md-12">
+                    @*@Html.LabelFor(model => model.Nome, htmlAttributes: new {@class = "control-label col-md-2"})*@
+                    <div class="col-md-6 col-md-offset-1">
+                        <label class="control-label">Nome</label>
+                        @Html.EditorFor(model => model.Nome, new {htmlAttributes = new {@class = "form-control"}})
+                        @Html.ValidationMessageFor(model => model.Nome, "", new {@class = "text-danger"})
+                    </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Criar" class="btn btn-default" />
+                    <div class="col-md-2" style="padding-top: 25px">
+                        <label class="control-label">Ativo</label>
+                        @Html.CheckBox("Ativo")
+                    </div>
+                </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-1 col-md-10" style="padding-left: 27px">
+                        <input type="submit" value="Criar" class="btn btn-default"/>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

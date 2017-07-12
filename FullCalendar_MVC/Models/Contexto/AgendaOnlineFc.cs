@@ -17,7 +17,7 @@ namespace FullCalendar_MVC.Models.Contexto
     public class AgendaOnlineFc : IdentityDbContext<Usuario, Grupo, Guid, UsuarioLogin, UsuarioGrupo, UsuarioIdentificacao>
     {
         public AgendaOnlineFc()
-            : base("AgendaOnlineFc")
+            : base("lotussistemas")
         {
 
         }

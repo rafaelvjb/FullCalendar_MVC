@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
@@ -23,33 +25,34 @@ namespace FullCalendar_MVC.Controllers
         }
 
         //lista todos os eventos
+        [SuppressMessage("ReSharper", "JoinDeclarationAndInitializer")]
+        [SuppressMessage("ReSharper", "NotAccessedVariable")]
         public JsonResult Eventos(string start, string end, string usuarioId)
         {
             var listaConvertida = new List<Eventos>();
             var dtInicial = Convert.ToDateTime(start).Date;
             var dtfinal = Convert.ToDateTime(end).Date;
             IQueryable<Eventos> queryable = Db.Eventos;
+
             if (!String.IsNullOrEmpty(usuarioId))
             {
                 var id = Guid.Parse(usuarioId);
                 queryable = queryable.Where(d => d.ProfissionalId == id);
             }
 
+            //var usuarioLogado = Db.Users.FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.User.Identity.Name)) ;
+            //if (usuarioLogado != null && usuarioLogado.Filtrado)
+            //{
+            //    queryable = queryable.Where(d => d.)
+            //}
+
             queryable = queryable.Where(e => e.Profissional.Ativo == true);
             var lista = queryable.Where(d => d.end < dtfinal && d.start > dtInicial).ToList();
 
-            var datafim = new TimeSpan(4, 0, 0);
             foreach (var item in lista)
             {
                 string valor;
-                if (item.Consulta)
-                {
-                    valor = "Consulta";
-                }
-                else
-                {
-                    valor = "Retorno";
-                }
+                valor = item.Consulta ? "Consulta" : "Retorno";
 
                 var evento = new Eventos
                 {
@@ -64,6 +67,7 @@ namespace FullCalendar_MVC.Controllers
             return Json(listaConvertida, JsonRequestBehavior.AllowGet);
         }
 
+        //Atualiza Evento
         public ActionResult AtualizaEvento(EventoViewModel eventos)
         {
             var data = DateTime.Parse(eventos.DataEvento);
@@ -92,7 +96,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         //Deleta Evento
-        public JsonResult DeletaEvento(int id)
+        public JsonResult DeletaEvento(int? id)
         {
             if (id == null) return Json(new { message = "Problema ao deletar Evento!!!" }, JsonRequestBehavior.AllowGet);
             var lol = Convert.ToInt32(id);
@@ -139,42 +143,46 @@ namespace FullCalendar_MVC.Controllers
             Db.Eventos.Add(evento);
             Db.SaveChanges();
             return Json(new { message = "Evento salvo com sucesso!" });
-            //return RedirectToAction("Index", "Home");
         }
 
         // Atualiza a duração do evento
         public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
-            evento.ID = id;
-            evento.start = Convert.ToDateTime(NewEventStart);
-            evento.end = Convert.ToDateTime(NewEventEnd);
+            if (evento != null)
+            {
+                evento.ID = id;
+                evento.start = Convert.ToDateTime(NewEventStart);
+                evento.end = Convert.ToDateTime(NewEventEnd);
 
-            var tm = new TimeSpan(0, 1, 0);
-            var convertido = evento.end.Subtract(tm);
-            if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
+               // var tm = new TimeSpan(0, 1, 0);
+               // var convertido = evento.end.Subtract(tm);
+        
+                //if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
 
-            var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
+                var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
 
-            //&& evento.ID != verificaExistencia.ID
-            if (verificaExistencia != null && verificaExistencia.ID != id)
-                return Json(new { message = "Falha ao atualizar eventos" });
+                //&& evento.ID != verificaExistencia.ID
+                if (verificaExistencia != null && verificaExistencia.ID != id)
+                    return Json(new { message = "Falha ao atualizar eventos" });
 
-            if (evento.end <= DateTime.Now)
-                return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
+                if (evento.end <= DateTime.Now)
+                    return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
 
 
-            Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+                Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+            }
             Db.SaveChanges();
             return Json(new { message = "Sucesso" });
         }
 
+        //Obterm por Id
         public JsonResult ObtemPorId(int id)
         {
             var eventos = Db.Eventos.FirstOrDefault(e => e.ID == id);
+            Debug.Assert(eventos != null, "eventos != null");
             var evento = new Eventos
             {
-                // ReSharper disable once PossibleNullReferenceException
                 ID = eventos.ID,
                 title = eventos.title,
                 start = Convert.ToDateTime(eventos.start),

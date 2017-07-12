@@ -6,28 +6,36 @@
 
 <h2 style="text-align: center;">Indice</h2>
 
-<p>
-    @Html.ActionLink("Criar Novo", "Create")
+<p class="col-md-offset-2">
+    <a href="@Url.Action("Create")">
+        <img alt="Widget View" src="@Url.Content("~/fonts/Icones/AdicionarUsuario.png")">
+        Criar Novo
+    </a>
+    @*@Html.ActionLink("Criar Novo", "Create", new { @class = "col-md-offset-2" })*@
 </p>
-<table class="table ">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nome)
-        </th>
-        <th style="padding-left:60px">Ações</th>
-    </tr>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nome)
+                </th>
+                <th style="padding-left:60px">Ações</th>
+            </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Nome)
-        </td>
-        <td>
-            @Html.ActionLink("Editar", "Edit", new { id=item.ProfissionalId }) |
-            @Html.ActionLink("Detalhes", "Details", new { id=item.ProfissionalId }) |
-            @Html.ActionLink("Deletar", "Delete", new { id=item.ProfissionalId })
-        </td>
-    </tr>
-}
-
-</table>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nome)
+                    </td>
+                    <td style="padding-left: 30px;">
+                        @Html.ActionLink("Editar", "Edit", new { id = item.ProfissionalId }) |
+                        <!--Html.ActionLink("Detalhes", "Details", new { id = item.ProfissionalId }) |-->
+                        @Html.ActionLink("Deletar", "Delete", new { id = item.ProfissionalId })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

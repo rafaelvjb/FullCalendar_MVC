@@ -5,19 +5,23 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Indice</h2>
-
-<p>
-    @Html.ActionLink("Criar Novo", "Create")
+<h2 style="text-align: center;">Indice</h2>
+<p class="col-md-offset-2">
+    <a href="@Url.Action("Create")">
+        <img alt="Widget View" src="@Url.Content("~/fonts/Icones/AdicionarUsuario.png")">
+        Criar Novo
+    </a>
+    @*@Html.ActionLink("Criar Novo", "Create", new { @class = "col-md-offset-2" })*@
 </p>
+
 <div class="row">
-    <div class="col-md-8 col-md-offset-1">
-        <table class="table col-md-8">
+    <div class="col-md-8 col-md-offset-2">
+        <table class="table">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Nome)
                 </th>
-                <th>Ações</th>
+                <th  style="padding-left: 60px;">Ações</th>
             </tr>
 
             @foreach (var item in Model)
@@ -26,9 +30,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Nome)
                     </td>
-                    <td>
+                    <td style="padding-left: 30px;">
                         @Html.ActionLink("Editar", "Edit", new { id = item.ConvenioId }) |
-                        @Html.ActionLink("Detalhes", "Details", new { id = item.ConvenioId }) |
+                        <!--Html.ActionLink("Detalhes", "Details", new { id = item.ConvenioId }) |-->
                         @Html.ActionLink("Excluir", "Delete", new { id = item.ConvenioId })
                     </td>
                 </tr>
