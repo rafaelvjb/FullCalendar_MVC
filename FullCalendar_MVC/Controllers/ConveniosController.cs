@@ -13,19 +13,22 @@ namespace FullCalendar_MVC.Controllers
         private AgendaOnlineFc db = new AgendaOnlineFc();
 
         // GET: Convenios
+        [Authorize]
         public async Task<ActionResult> Index()
         {
             return View(await db.Convenio.ToListAsync());
         }
 
         // GET: Convenios/Details/5
+        [Authorize]
         public async Task<ActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Convenio convenio = await db.Convenio.FindAsync(id);
+
+            var convenio = await db.Convenio.FindAsync(id);
             if (convenio == null)
             {
                 return HttpNotFound();
@@ -34,6 +37,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // GET: Convenios/Create
+        [Authorize]
         public ActionResult Create()
         {
             return View();
@@ -44,28 +48,27 @@ namespace FullCalendar_MVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Create([Bind(Include = "ConvenioId,Nome")] Convenio convenio)
         {
-            if (ModelState.IsValid)
-            {
-                convenio.ConvenioId = Guid.NewGuid();
-                convenio.DataCriacao = DateTime.Now;
-                db.Convenio.Add(convenio);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-
-            return View(convenio);
+            if (!ModelState.IsValid) return View(convenio);
+            convenio.ConvenioId = Guid.NewGuid();
+            convenio.DataCriacao = DateTime.Now;
+            db.Convenio.Add(convenio);
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Convenios/Edit/5
+        [Authorize]
         public async Task<ActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Convenio convenio = await db.Convenio.FindAsync(id);
+
+            var convenio = await db.Convenio.FindAsync(id);
             if (convenio == null)
             {
                 return HttpNotFound();
@@ -76,28 +79,27 @@ namespace FullCalendar_MVC.Controllers
         // POST: Convenios/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // [ValidateAntiForgeryToken]
         [HttpPost]
-       // [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Edit(Convenio convenio)
         {
-            if (ModelState.IsValid)
-            {
-                db.Entry(convenio).State = EntityState.Deleted;
-                db.Convenio.Add(convenio);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-            return View(convenio);
+            if (!ModelState.IsValid) return View(convenio);
+            convenio.DataCriacao = DateTime.Now;
+            db.Entry(convenio).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         // GET: Convenios/Delete/5
+        [Authorize]
         public async Task<ActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Convenio convenio = await db.Convenio.FindAsync(id);
+            var convenio = await db.Convenio.FindAsync(id);
             if (convenio == null)
             {
                 return HttpNotFound();
@@ -108,10 +110,11 @@ namespace FullCalendar_MVC.Controllers
         // POST: Convenios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> DeleteConfirmed(Guid id)
         {
-            Convenio convenio = await db.Convenio.FindAsync(id);
-            db.Convenio.Remove(convenio);
+            var convenio = await db.Convenio.FindAsync(id);
+            if (convenio != null) db.Convenio.Remove(convenio);
             await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }

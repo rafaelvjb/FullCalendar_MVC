@@ -40,12 +40,6 @@ namespace FullCalendar_MVC.Controllers
                 queryable = queryable.Where(d => d.ProfissionalId == id);
             }
 
-            //var usuarioLogado = Db.Users.FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.User.Identity.Name)) ;
-            //if (usuarioLogado != null && usuarioLogado.Filtrado)
-            //{
-            //    queryable = queryable.Where(d => d.)
-            //}
-
             queryable = queryable.Where(e => e.Profissional.Ativo == true);
             var lista = queryable.Where(d => d.end < dtfinal && d.start > dtInicial).ToList();
 
@@ -53,11 +47,10 @@ namespace FullCalendar_MVC.Controllers
             {
                 string valor;
                 valor = item.Consulta ? "Consulta" : "Retorno";
-
                 var evento = new Eventos
                 {
                     ID = item.ID,
-                    title = $"{item.title} {" - "} {valor} {" - "} {item.Convenio.Nome.ToString()}",
+                    title = $"{item.title}  - {valor}  - {item.Convenio.Nome}",
                     start = Convert.ToDateTime(item.start),
                     end = Convert.ToDateTime(item.end)
                 };
@@ -101,7 +94,7 @@ namespace FullCalendar_MVC.Controllers
             if (id == null) return Json(new { message = "Problema ao deletar Evento!!!" }, JsonRequestBehavior.AllowGet);
             var lol = Convert.ToInt32(id);
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == lol);
-            Db.Eventos.Remove(evento);
+            if (evento != null) Db.Eventos.Remove(evento);
             Db.SaveChanges();
             return Json(new { message = "sucesso" }, JsonRequestBehavior.AllowGet);
         }

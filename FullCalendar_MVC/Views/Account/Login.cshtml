@@ -15,7 +15,7 @@
                 <hr />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group" style="padding-left:50px;">
-                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                     @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
                     <div class="col-md-8">
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
@@ -31,8 +31,7 @@
                     <div>
                         <div class="checkbox col-md-offset-4">
                             @Html.CheckBoxFor(m => m.RememberMe)
-                            <label class="control-label">Lembrar Senha</label>
-                            @*@Html.LabelFor(m => m.RememberMe)*@
+                            <label class="control-label" style="padding-top: 0px; padding-left: 0px; font-weight: bold">Lembrar Senha</label>
                         </div>
                     </div>
                 </div>

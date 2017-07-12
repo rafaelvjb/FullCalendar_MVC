@@ -4,28 +4,29 @@
     ViewBag.Title = "Delete";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<h3 style="text-align: center">Tem certeza que deseja excluir este Convênio ?</h3>
 
-<h2 class="col-md-offset-6">Excluir</h2>
+<div class="row">
+    <div class="form-group col-md-6 col-md-offset-3">
+        <hr />
+        <dl class="dl-horizontal col-md-offset-2">
+            <dt>
+                @Html.DisplayNameFor(model => model.Nome)
+            </dt>
 
-<h3>Tem certeza que deseja excluir</h3>
-<div class="col-md-offset-4">
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Nome)
+            </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
+        </dl>
 
-    </dl>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
 
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color col-md-offset-2" style="padding-left:5px;">
-            <input type="submit" value="Delete" class="btn btn-default" />
-        </div>
-    }
+            <div class="form-actions no-color col-md-offset-4" style="padding-left: 40px;">
+                <input type="submit" value="Excluir" class="btn btn-default" />
+            </div>
+        }
+    </div>
 </div>

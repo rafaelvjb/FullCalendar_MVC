@@ -57,6 +57,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // GET: Profissionais/Edit/5
+        [Authorize]
         public ActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -78,6 +79,7 @@ namespace FullCalendar_MVC.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Edit([Bind(Include = "ProfissionalId,Nome,Ativo")] Profissional profissional)
         {
             if (ModelState.IsValid)
@@ -90,6 +92,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // GET: Profissionais/Delete/5
+        [Authorize]
         public ActionResult Delete(Guid? id)
         {
             if (id == null)
@@ -107,6 +110,7 @@ namespace FullCalendar_MVC.Controllers
         // POST: Profissionais/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public  ActionResult DeleteConfirmed(Guid id)
         {
             var profissional =  Db.Profissionais.Find(id);
