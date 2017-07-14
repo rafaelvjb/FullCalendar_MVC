@@ -50,15 +50,15 @@ namespace FullCalendar_MVC.Models.ViewModels
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Usuario")]
+        [Display(Name = "Usuário")]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Senha")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "Lembrar Senha")]
         public bool RememberMe { get; set; }
     }
 

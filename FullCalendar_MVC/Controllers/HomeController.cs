@@ -156,8 +156,8 @@ namespace FullCalendar_MVC.Controllers
                 var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
 
                 //&& evento.ID != verificaExistencia.ID
-                if (verificaExistencia != null && verificaExistencia.ID != id)
-                    return Json(new { message = "Falha ao atualizar eventos" });
+                //if (verificaExistencia != null && verificaExistencia.ID != id)
+                //    return Json(new { message = "Falha ao atualizar eventos" });
 
                 if (evento.end <= DateTime.Now)
                     return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
