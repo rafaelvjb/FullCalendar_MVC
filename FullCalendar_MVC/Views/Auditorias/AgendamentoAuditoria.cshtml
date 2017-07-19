@@ -1,0 +1,81 @@
+﻿@model IEnumerable<FullCalendar_MVC.Models.Eventos>
+
+@{
+    ViewBag.Title = "AgendamentoAuditoria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>AgendamentoAuditoria</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+          Nome Convênio
+        </th>
+        <th>
+          Nome Profissional
+        </th>
+        <th>
+           Paciente
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.start)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.end)
+        </th>
+  
+        <th>
+            @Html.DisplayNameFor(model => model.DataCriacao)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UsuarioCriacao)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UltimaModificacao)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UsuarioModificacao)
+        </th>
+
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Convenio.Nome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Profissional.Nome)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.start)
+        </td>
+   
+        <td>
+            @Html.DisplayFor(modelItem => item.end)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataCriacao)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UsuarioCriacao)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UltimaModificacao)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UsuarioModificacao)
+        </td>
+      
+    </tr>
+}
+
+</table>

@@ -511,10 +511,10 @@
     <Content Include="Views\Convenios\Details.cshtml" />
     <Content Include="Views\Convenios\Edit.cshtml" />
     <Content Include="Views\Convenios\Index.cshtml" />
+    <Content Include="Views\Auditorias\AgendamentoAuditoria.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Auditorias\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
