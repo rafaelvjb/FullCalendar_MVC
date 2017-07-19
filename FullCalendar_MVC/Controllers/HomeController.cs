@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -83,6 +84,16 @@ namespace FullCalendar_MVC.Controllers
                 Observacoes = eventos.Observacoes
             };
 
+            var profissionalId = Guid.Parse(eventos.ProfissionalId);
+
+            var possuiAgendamento = Db.Eventos
+                .FirstOrDefaultAsync(e => e.ProfissionalId == profissionalId &&
+                                    e.start == ev.start && e.end <= ev.end);
+         
+            if (possuiAgendamento != null)
+            {
+                return Json(new { message = "Este profissional já possui um agendamento neste horario!" });
+            }
             Db.Entry(ev).State = System.Data.Entity.EntityState.Modified;
             Db.SaveChanges();
             return RedirectToAction("Index", "Home");
@@ -128,6 +139,19 @@ namespace FullCalendar_MVC.Controllers
 
             evento.ProfissionalId = Guid.Parse(eventos.ProfissionalId);
             evento.ConvenioId = eventos.ConvenioId;
+            evento.Observacoes = eventos.Observacoes;
+
+
+            var profissionalId = Guid.Parse(eventos.ProfissionalId);
+
+            var possuiAgendamento = Db.Eventos
+                .FirstOrDefault(e => e.ProfissionalId == profissionalId &&
+                                     e.start >= evento.start && e.end <= evento.end);
+
+            if (possuiAgendamento != null)
+            {
+                return   Json(new { message = "Este profissional já possui um agendamento neste horario!"} );
+            }
 
             if (evento.start <= DateTime.Now)
             {
@@ -148,16 +172,30 @@ namespace FullCalendar_MVC.Controllers
                 evento.start = Convert.ToDateTime(NewEventStart);
                 evento.end = Convert.ToDateTime(NewEventEnd);
 
-               // var tm = new TimeSpan(0, 1, 0);
-               // var convertido = evento.end.Subtract(tm);
-        
+
+
+                // var tm = new TimeSpan(0, 1, 0);
+                // var convertido = evento.end.Subtract(tm);
+
                 //if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
 
-                var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
+                // var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
 
                 //&& evento.ID != verificaExistencia.ID
                 //if (verificaExistencia != null && verificaExistencia.ID != id)
                 //    return Json(new { message = "Falha ao atualizar eventos" });
+
+
+                
+
+                var possuiAgendamento = Db.Eventos
+                    .FirstOrDefaultAsync(e => e.ProfissionalId == evento.ProfissionalId &&
+                                              e.start == evento.start && e.end <= evento.end);
+
+                if (possuiAgendamento != null)
+                {
+                    return Json(new { message = "Possui Agendamento" });
+                }
 
                 if (evento.end <= DateTime.Now)
                     return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
@@ -185,6 +223,9 @@ namespace FullCalendar_MVC.Controllers
                 Consulta = eventos.Consulta,
                 Retorno = eventos.Retorno
             };
+
+            ViewBag.HoraInicio = evento.start.TimeOfDay;
+            ViewBag.HoraFim = evento.end.TimeOfDay;
             return Json(evento, JsonRequestBehavior.AllowGet);
         }
     }

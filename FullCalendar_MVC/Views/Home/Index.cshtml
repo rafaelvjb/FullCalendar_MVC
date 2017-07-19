@@ -3,24 +3,36 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var jss = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var horaInicio = jss.Serialize(ViewBag.HoraInicio);
+
 }
 
 @Scripts.Render("~/bundles/jqueryval")
 
 @section scripts{
+    
+    
     <script>
-        $(document).ready(function() {
-            jQuery(function($) {
+        $( function() {
+            $("#editEventDate").datepicker();
+        } );
+    </script>
+
+    @*<script>
+        $(document).ready(function () {
+            jQuery(function ($) {
                 $("#editEventDate").mask("99/99/9999");
                 $("#campoTelefone").mask("(999) 999-9999");
                 $("#campoSenha").mask("***-****");
             });
         });
-    </script>
+    </script>*@
     <script>
         var CalLoading = true;
         //Carregamento do calendário e eventos
-        $(document).ready(function() {
+        $(document).ready(function () {
             var month = { url: '/Home/Eventos' }
             var day = { url: '/Home/Eventos' }
 
@@ -31,7 +43,7 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-                defaultView: 'agendaDay',
+                defaultView: 'agendaWeek',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
@@ -39,7 +51,7 @@
                 height: 472,
                 events: {
                     url: 'Eventos',
-                    data: function() {
+                    data: function () {
                         return {
                             usuarioId: $('#profissionalM').val()
                         };
@@ -47,58 +59,15 @@
                 },
 
                 eventClick: function (calEvent, jsEvent, view) {
-                    //swal({
-                    //        title: "O que deseja fazer?",
-                    //        text: "Você pode editar ou adicionar um novo agendamento",
-                    //        type: "warning",
-                    //        showCancelButton: true,
-                    //        confirmButtonColor: "#DD6B55",
-                    //        confirmButtonText: "Adicionair novo evento",
-                    //        cancelButtonText: "No, cancel plx!",
-                    //        closeOnConfirm: false,
-                    //        closeOnCancel: false
-                    //    },
-                    //    function (isConfirm) {
-                    //        var date = [];
-                    //        if (isConfirm) {
-                    //            $('#eventTitle').val("");
-                    //             $('#eventDate').val(ObtemData(start));
-                    //            //$('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
-                    //            ModalAdicionar(date);
-                    //           // swal("Deleted!", "Your imaginary file has been deleted.", "success");
-                    //        } else {
-                    //            $.ajax({
-                    //                url: '/Home/ObtemPorId',
-                    //                data: $('#ID').val(calEvent.ID),
-                    //                datatype: 'json',
-                    //                success: function (data) {
-                    //                    $('#editEventTitle').val(data.title);
-                    //                    $('#editEventDate').val(ObtemData(data.start));
-                    //                    $('#editEventTime').val(ObtemHora(data.start));
-                    //                    $('#editEventDuration').val(ObtemHora(data.end));
-                    //                    //$('#editEventDuration').val($.fullCalendar.formatDate(calEvent.end, 'HH:mm'));
-                    //                    $('#profissionalE').val(data.ProfissionalId);
-                    //                    $('#Observacoes').val(data.Observacoes);
-                    //                    ModalEditar(data);
-                    //                }
-                    //            });
-                    //            //swal("Cancelled", "Your imaginary file is safe :)", "error");
-                    //        }
-                    //    });
-
-
-
-
                     $.ajax({
                         url: '/Home/ObtemPorId',
                         data: $('#ID').val(calEvent.ID),
                         datatype: 'json',
-                        success: function(data) {
+                        success: function (data) {
                             $('#editEventTitle').val(data.title);
                             $('#editEventDate').val(ObtemData(data.start));
                             $('#editEventTime').val(ObtemHora(data.start));
                             $('#editEventDuration').val(ObtemHora(data.end));
-                            //$('#editEventDuration').val($.fullCalendar.formatDate(calEvent.end, 'HH:mm'));
                             $('#profissionalE').val(data.ProfissionalId);
                             $('#Observacoes').val(data.Observacoes);
                             ModalEditar(data);
@@ -106,7 +75,7 @@
                     });
                 },
 
-                eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) {
+                eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
                     UpdateEvent(event.ID, event.start, event.end);
                     //swal({
                     //    title: "Ajax request example",
@@ -124,18 +93,18 @@
                     //   // location.reload();
                     //});
                 },
-                eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
+                eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
                     UpdateEvent(event.ID, event.start, event.end);
                 },
 
-                dayClick: function(date, allDay, jsEvent, view) {
+                dayClick: function (date, allDay, jsEvent, view) {
                     $('#eventTitle').val("");
                     $('#eventDate').val($.fullCalendar.formatDate(date, 'DD/MM/YYYY'));
                     $('#eventTime').val($.fullCalendar.formatDate(date, 'HH:mm'));
                     ModalAdicionar(date);
                 },
 
-                viewDisplay: function(view) {
+                viewDisplay: function (view) {
                     if (lastView == 'undefined') {
                         lastView = 'firstRun';
                     }
@@ -168,29 +137,29 @@
             CalLoading = false;
         });
         //Botão cancelar do modal editar
-        $('#btnPopupCancel').click(function() {
+        $('#btnPopupCancel').click(function () {
             ClearPopupFormValues();
             $('#popupEventForm').hide();
         });
 
         //Função em um botão do modal para deletar evento
-        $('#BtnDeletaEvento').click(function() {
+        $('#BtnDeletaEvento').click(function () {
             $('#ModalEditar').hide();
             var idd = parseInt($('#ID').val());
             ClearPopupFormValues();
             $.ajax({
                 url: "/Home/DeletaEvento",
                 data: { id: JSON.stringify(idd) },
-                success: function(response) {
+                success: function (response) {
                     if (response.message == 'sucesso') {
                         swal({
-                                title: 'Evento Excluido com sucesso!!!',
-                                //text: "You will not be able to recover this imaginary file!",
-                                type: "success",
-                                timer: 2000,
-                                showConfirmButton: false
-                            },
-                            function() {
+                            title: 'Evento Excluido com sucesso!!!',
+                            //text: "You will not be able to recover this imaginary file!",
+                            type: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        },
+                            function () {
                                 location.reload();
                             });
                         $('#ModalEditar').hide();
@@ -202,34 +171,34 @@
         });
 
         //Função que serializa o formulário e envia para o controller por ajax
-        $(function() {
-            $("#formCliente input[type=submit]").click(function(event) {
+        $(function () {
+            $("#formCliente input[type=submit]").click(function (event) {
                 event.preventDefault();
                 var form = document.getElementById("formCliente");
                 var data = $(form).serialize();
                 $.post(form.action,
                     data,
-                    function(response) {
+                    function (response) {
                         if (response.message === 'Evento salvo com sucesso!') {
                             swal({
-                                    title: 'Evento salvo com sucesso!!!',
-                                    //text: "You will not be able to recover this imaginary file!",
-                                    type: "success",
-                                    timer: 5000,
-                                    showConfirmButton: true
-                                },
-                                function() {
+                                title: 'Evento salvo com sucesso!!!',
+                                //text: "You will not be able to recover this imaginary file!",
+                                type: "success",
+                                timer: 5000,
+                                showConfirmButton: true
+                            },
+                                function () {
                                     location.reload();
                                 });
                         } else {
                             swal({
-                                    title: response.message,
-                                    //text: "You will not be able to recover this imaginary file!",
-                                    type: "error",
-                                    timer: 5000,
-                                    showConfirmButton: true
-                                },
-                                function() {
+                                title: response.message,
+                                //text: "You will not be able to recover this imaginary file!",
+                                type: "error",
+                                timer: 5000,
+                                showConfirmButton: true
+                            },
+                                function () {
                                     location.reload();
                                 });
                         }
@@ -253,7 +222,19 @@
 
         function ObtemHora(date) {
             var startDate = new Date(date);
-            var formated = startDate.getHours() + ":" + startDate.getMinutes();
+            var horaFormatada;
+            var minutoFormatado;
+
+            if (startDate.getHours() <= 9) {
+                horaFormatada = "0" + startDate.getHours();
+            } else {
+                horaFormatada = startDate.getHours();
+            }
+
+            if (startDate.getMinutes() === 0) {
+                minutoFormatado = startDate.getMinutes() + "0";
+            }
+            var formated = horaFormatada + ":" + minutoFormatado;
             return formated;
         }
 
@@ -282,44 +263,56 @@
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify(dataRow),
-                success: function(response) {
+                success: function (response) {
                     switch (response.message) {
-                    case "Sucesso":
-                        swal({
+                        case "Sucesso":
+                            swal({
                                 title: "Modificado com sucesso",
                                 type: "success",
                                 timer: 2000,
                                 showConfirmButton: true
                             },
-                            function() {
+                                function () {
+                                    location.reload();
+                                });
+                            break;
+                        case "Falha ao atualizar eventos":
+                            swal({
+                                title: "Falha ao atualizar eventos",
+                                type: "error",
+                                timer: 2000,
+                                showConfirmButton: true
+                            },
+                            function () {
                                 location.reload();
                             });
-                        break;
-                    case "Falha ao atualizar eventos":
-                        swal({
-                            title: "Falha ao atualizar eventos",
-                            type: "error",
-                            timer: 2000,
-                            showConfirmButton: true
-                        },
-                        function() {
-                            location.reload();
-                        });
-                        break;
+                            break;
 
-                    case "Não é possivel gravar um evento com a data anterior que a atual":
-                        swal({
+                        case "Não é possivel gravar um evento com a data anterior que a atual":
+                            swal({
                                 title: "Não é possivel gravar um evento com a data anterior que a atual",
                                 type: "error",
                                 timer: 2000,
                                 showConfirmButton: true
                             },
-                            function() {
-                                location.reload();
-                            });
-                        break;
-                    default:
-                        var string = "";
+                                function () {
+                                    location.reload();
+                                });
+                            break;
+
+                        case "Possui Agendamento":
+                            swal({
+                                title: "Este profissional já possui um agendamento neste horario!",
+                                    type: "error",
+                                    timer: 2000,
+                                    showConfirmButton: true
+                                },
+                                function () {
+                                    location.reload();
+                                });
+                            break;
+                        default:
+                            var string = "";
                     }
                 }
             });
@@ -345,7 +338,7 @@
             var nome = $('#profissional').val();
         }
 
-        $('#profissionalM').change(function() {
+        $('#profissionalM').change(function () {
             $('#calendar').fullCalendar('refetchEvents');
         });
     </script>
@@ -509,6 +502,32 @@
                         </div>
                     </div>
 
+                    <div class="row" style="padding-top: 20px;">
+                        <div class="form-group">
+                            <!-- Profissional Id -->
+
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Profissional</label>
+                                @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
+                               {
+                                   Text = option.Nome,
+                                   Value = option.ProfissionalId.ToString(),
+                                   Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
+                               }), "Selecione", new { id = "profissionalE", @class = "form-control", required = "required" })
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="control-label col-md-2">Convênio</label>
+                                @Html.DropDownListFor(model => model.ConvenioId, ((IEnumerable<Convenio>)ViewBag.Convenios).Select(option => new SelectListItem
+                               {
+                                   Text = option.Nome,
+                                   Value = option.ConvenioId.ToString(),
+                                   Selected = (Model != null) && (option.ConvenioId == Model.ProfissionalId)
+                               }), "Selecione", new { id = "convenioE", @class = "form-control", required = "required" })
+                            </div>
+                        </div>
+                    </div>
+
                         <div class="row">
                             <div class="col-md-4 col-md-offset-2" style="padding-top: 20px;">
                                 <!-- Consulta -->
@@ -523,31 +542,6 @@
                             </div>
                         </div>
 
-                        <div class="row" style="padding-top: 20px;">
-                            <div class="form-group col-md-offset-3">
-                                <!-- Profissional Id -->
-
-                                <div class="col-md-6">
-                                    <label class="control-label col-md-2">Profissional</label>
-                                    @Html.DropDownListFor(model => model.ProfissionalId, ((IEnumerable<Profissional>)ViewBag.Profissionais).Select(option => new SelectListItem
-                               {
-                                   Text = option.Nome,
-                                   Value = option.ProfissionalId.ToString(),
-                                   Selected = (Model != null) && (option.ProfissionalId == Model.ProfissionalId)
-                               }), "Selecione", new { id = "profissionalE", @class = "form-control", required = "required" })
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="control-label col-md-2">Profissional</label>
-                                    @Html.DropDownListFor(model => model.ConvenioId, ((IEnumerable<Convenio>)ViewBag.Convenios).Select(option => new SelectListItem
-                               {
-                                   Text = option.Nome,
-                                   Value = option.ConvenioId.ToString(),
-                                   Selected = (Model != null) && (option.ConvenioId == Model.ProfissionalId)
-                               }), "Selecione", new { id = "convenioE", @class = "form-control", required = "required" })
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="form-group" style="padding-top: 15px;">
 
@@ -579,8 +573,6 @@
                 <h4 class="modal-title" style="padding-left:20px;">Deseja alterar este evento?</h4>
             </div>
             <hr />
-
-
         </div>
     </div>
 </div>
