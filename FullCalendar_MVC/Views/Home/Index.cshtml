@@ -1,34 +1,19 @@
-﻿@model FullCalendar_MVC.Models.Eventos
+﻿@model Eventos
 @using FullCalendar_MVC.Models
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    var jss = new System.Web.Script.Serialization.JavaScriptSerializer();
-    var horaInicio = jss.Serialize(ViewBag.HoraInicio);
-
 }
 
 @Scripts.Render("~/bundles/jqueryval")
 
 @section scripts{
-    
-    
     <script>
         $( function() {
             $("#editEventDate").datepicker();
         } );
     </script>
 
-    @*<script>
-        $(document).ready(function () {
-            jQuery(function ($) {
-                $("#editEventDate").mask("99/99/9999");
-                $("#campoTelefone").mask("(999) 999-9999");
-                $("#campoSenha").mask("***-****");
-            });
-        });
-    </script>*@
     <script>
         var CalLoading = true;
         //Carregamento do calendário e eventos
@@ -43,7 +28,7 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-                defaultView: 'agendaWeek',
+                defaultView: 'agendaDay',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
@@ -233,7 +218,11 @@
 
             if (startDate.getMinutes() === 0) {
                 minutoFormatado = startDate.getMinutes() + "0";
+            } else {
+                minutoFormatado = startDate.getMinutes();
             }
+
+
             var formated = horaFormatada + ":" + minutoFormatado;
             return formated;
         }

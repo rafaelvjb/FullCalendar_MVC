@@ -94,7 +94,7 @@ namespace FullCalendar_MVC.Controllers
             {
                 return Json(new { message = "Este profissional já possui um agendamento neste horario!" });
             }
-            Db.Entry(ev).State = System.Data.Entity.EntityState.Modified;
+            Db.Entry(ev).State = EntityState.Modified;
             Db.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
@@ -174,34 +174,34 @@ namespace FullCalendar_MVC.Controllers
 
 
 
-                // var tm = new TimeSpan(0, 1, 0);
-                // var convertido = evento.end.Subtract(tm);
+                 var tm = new TimeSpan(0, 1, 0);
+                 var convertido = evento.end.Subtract(tm);
 
                 //if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
 
-                // var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start);
+                 var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start && d.ProfissionalId == evento.ProfissionalId);
 
                 //&& evento.ID != verificaExistencia.ID
-                //if (verificaExistencia != null && verificaExistencia.ID != id)
-                //    return Json(new { message = "Falha ao atualizar eventos" });
+                if (verificaExistencia != null)
+                    return Json(new { message = "Falha ao atualizar eventos" });
 
 
-                
 
-                var possuiAgendamento = Db.Eventos
-                    .FirstOrDefaultAsync(e => e.ProfissionalId == evento.ProfissionalId &&
-                                              e.start == evento.start && e.end <= evento.end);
+                //var possuiAgendamento =
+                //    Db.Eventos
+                //    .FirstOrDefaultAsync(e => e.start >= evento.start && e.end <= convertido &&
+                //     e.ProfissionalId == evento.ProfissionalId);
 
-                if (possuiAgendamento != null)
-                {
-                    return Json(new { message = "Possui Agendamento" });
-                }
+                //if (possuiAgendamento != null)
+                //{
+                //    return Json(new { message = "Possui Agendamento" });
+                //}
 
                 if (evento.end <= DateTime.Now)
                     return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
 
 
-                Db.Entry(evento).State = System.Data.Entity.EntityState.Modified;
+                Db.Entry(evento).State = EntityState.Modified;
             }
             Db.SaveChanges();
             return Json(new { message = "Sucesso" });
