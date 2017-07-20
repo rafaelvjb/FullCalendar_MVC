@@ -40,10 +40,6 @@
                         <ul class="dropdown-menu">
                             <li>@Html.ActionLink("Profissionais","Index","Profissionais")
                             <li>@Html.ActionLink("Convenios", "Index", "Convenios")</li>
-                            @if (Request.IsAuthenticated)
-                            {
-                                <li>@Html.ActionLink("Auditoria", "AgendamentoAuditoria", "Auditorias")</li>
-                            }
                             @*<li><a href="#">Another action</a></li>
                             <li><a href="#">Something else here</a></li>
                             <li role="separator" class="divider"></li>
