@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
 using FullCalendar_MVC.Models.ViewModels;
+using Microsoft.Owin.Security.Provider;
 
 namespace FullCalendar_MVC.Controllers
 {
@@ -62,7 +63,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         //Atualiza Evento
-        public ActionResult AtualizaEvento(EventoViewModel eventos)
+        public JsonResult AtualizaEvento(EventoViewModel eventos)
         {
             var data = DateTime.Parse(eventos.DataEvento);
             var hora = eventos.HoraEvento.Split(':');
@@ -86,17 +87,22 @@ namespace FullCalendar_MVC.Controllers
 
             var profissionalId = Guid.Parse(eventos.ProfissionalId);
 
+            
+
             var possuiAgendamento = Db.Eventos
-                .FirstOrDefaultAsync(e => e.ProfissionalId == profissionalId &&
-                                    e.start == ev.start && e.end <= ev.end);
+                .FirstOrDefault(e => e.ProfissionalId == profissionalId &&
+                                    e.start == ev.start && e.end <= ev.end &&
+                                    e.ID == eventos.ID);
          
-            if (possuiAgendamento != null)
+            if (possuiAgendamento != null && possuiAgendamento.ID != eventos.ID)
             {
                 return Json(new { message = "Este profissional já possui um agendamento neste horario!" });
             }
+            //Db.Entry(ev).State = EntityState.Unchanged;
             Db.Entry(ev).State = EntityState.Modified;
             Db.SaveChanges();
-            return RedirectToAction("Index", "Home");
+            return Json(new {message = "Alterado com Sucesso"});
+             //return RedirectToAction("Index", "Home");
         }
 
         //Deleta Evento
@@ -144,14 +150,14 @@ namespace FullCalendar_MVC.Controllers
 
             var profissionalId = Guid.Parse(eventos.ProfissionalId);
 
-            var possuiAgendamento = Db.Eventos
-                .FirstOrDefault(e => e.ProfissionalId == profissionalId &&
-                                     e.start >= evento.start && e.end <= evento.end);
+            //var possuiAgendamento = Db.Eventos
+            //    .FirstOrDefault(e => e.ProfissionalId == profissionalId &&
+            //                         e.start >= evento.start && e.end <= evento.end);
 
-            if (possuiAgendamento != null)
-            {
-                return   Json(new { message = "Este profissional já possui um agendamento neste horario!"} );
-            }
+            //if (possuiAgendamento != null && possuiAgendamento.ID != eventos.ID)
+            //{
+            //    return   Json(new { message = "Este profissional já possui um agendamento neste horario!"} );
+            //}
 
             if (evento.start <= DateTime.Now)
             {
