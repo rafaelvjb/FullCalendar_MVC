@@ -8,13 +8,13 @@ namespace FullCalendar_MVC.Models.Validacoes
     {
         private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
-            Formatting = Formatting.Indented,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            Formatting = Newtonsoft.Json.Formatting.Indented,
+            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
         };
 
         public override void ExecuteResult(ControllerContext context)
         {
-            if (JsonRequestBehavior == JsonRequestBehavior.DenyGet &&
+            if (this.JsonRequestBehavior == JsonRequestBehavior.DenyGet &&
                 string.Equals(context.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("GET request not allowed");
@@ -22,19 +22,19 @@ namespace FullCalendar_MVC.Models.Validacoes
 
             var response = context.HttpContext.Response;
 
-            response.ContentType = !string.IsNullOrEmpty(ContentType) ? ContentType : "application/json";
+            response.ContentType = !string.IsNullOrEmpty(this.ContentType) ? this.ContentType : "application/json";
 
-            if (ContentEncoding != null)
+            if (this.ContentEncoding != null)
             {
-                response.ContentEncoding = ContentEncoding;
+                response.ContentEncoding = this.ContentEncoding;
             }
 
-            if (Data == null)
+            if (this.Data == null)
             {
                 return;
             }
 
-            response.Write(JsonConvert.SerializeObject(Data, Settings));
+            response.Write(JsonConvert.SerializeObject(this.Data, Settings));
         }
     }
 }

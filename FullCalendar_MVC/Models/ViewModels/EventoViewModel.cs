@@ -23,7 +23,6 @@ namespace FullCalendar_MVC.Models.ViewModels
         public String DuracaoEvento { get; set; }
 
         public String Observacoes { get; set; }
-
         [Required(ErrorMessage = "Este campo não pode ser vazio")]
         public String ProfissionalId { get; set; }
     }
