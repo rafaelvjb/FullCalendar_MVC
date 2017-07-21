@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
 namespace FullCalendar_MVC.Controllers
 {
-    public class AuditoriasController : FullCalendar_MVC.Controllers.Contoller
+    public class AuditoriasController : Controller
     {
         // GET: Auditorias
         public ActionResult Index()
@@ -17,11 +15,11 @@ namespace FullCalendar_MVC.Controllers
         }
 
 
-        public async Task<ActionResult> AgendamentoAuditoria()
+        public ActionResult AgendamentoAuditoria()
         {
-            var lista = await Db.Eventos.ToListAsync();
 
-            return View(lista);
+
+            return View();
         }
 
 
