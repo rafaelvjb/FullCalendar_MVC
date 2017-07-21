@@ -109,8 +109,8 @@ namespace FullCalendar_MVC.Controllers
         public JsonResult DeletaEvento(int? id)
         {
             if (id == null) return Json(new { message = "Problema ao deletar Evento!!!" }, JsonRequestBehavior.AllowGet);
-            var lol = Convert.ToInt32(id);
-            var evento = Db.Eventos.FirstOrDefault(e => e.ID == lol);
+            var idEvento = Convert.ToInt32(id);
+            var evento = Db.Eventos.FirstOrDefault(e => e.ID == idEvento);
             if (evento != null) Db.Eventos.Remove(evento);
             Db.SaveChanges();
             return Json(new { message = "sucesso" }, JsonRequestBehavior.AllowGet);
