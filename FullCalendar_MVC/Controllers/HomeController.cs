@@ -7,7 +7,7 @@ using System.Linq;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
 using FullCalendar_MVC.Models.ViewModels;
-using Microsoft.Owin.Security.Provider;
+using FullCalendar_MVC.Models.Validacoes;
 
 namespace FullCalendar_MVC.Controllers
 {
@@ -74,6 +74,15 @@ namespace FullCalendar_MVC.Controllers
             hora = eventos.DuracaoEvento.Split(':');
             datafim = datafim.AddHours(double.Parse(hora[0]));
             var end = datafim.AddMinutes(double.Parse(hora[1]));
+
+            var validaHorario = new ValidaHorario();
+
+            var possuiAgendamento = validaHorario.PossuiAgendamento(eventos, datafim);
+            if (possuiAgendamento)
+            {
+                return Json(new { message = "Este profissional já possui um agendamento neste horario!" }, JsonRequestBehavior.AllowGet);
+            }
+
             var ev = new Eventos()
             {
                 ID = eventos.ID,
@@ -85,24 +94,9 @@ namespace FullCalendar_MVC.Controllers
                 Observacoes = eventos.Observacoes
             };
 
-            var profissionalId = Guid.Parse(eventos.ProfissionalId);
-
-            
-
-            var possuiAgendamento = Db.Eventos
-                .FirstOrDefault(e => e.ProfissionalId == profissionalId &&
-                                    e.start == ev.start && e.end <= ev.end &&
-                                    e.ID == eventos.ID);
-         
-            if (possuiAgendamento != null && possuiAgendamento.ID != eventos.ID)
-            {
-                return Json(new { message = "Este profissional já possui um agendamento neste horario!" });
-            }
-            //Db.Entry(ev).State = EntityState.Unchanged;
             Db.Entry(ev).State = EntityState.Modified;
             Db.SaveChanges();
-            return Json(new {message = "Alterado com Sucesso"});
-             //return RedirectToAction("Index", "Home");
+            return Json(new { message = "Alterado com Sucesso" }, JsonRequestBehavior.AllowGet);
         }
 
         //Deleta Evento
@@ -123,23 +117,31 @@ namespace FullCalendar_MVC.Controllers
             evento.title = eventos.Titulo;
             evento.DataCriacao = DateTime.Now;
             evento.UsuarioCriacao = HttpContext.User.Identity.Name;
-          
+
             var data = DateTime.Parse(eventos.DataEvento);
 
             var hora = eventos.HoraEvento.Split(':');
             data = data.AddHours(Convert.ToDouble(hora[0]));
             data = data.AddMinutes(Convert.ToDouble(hora[1]));
             evento.start = data;
+
             if (!String.IsNullOrEmpty(eventos.DuracaoEvento))
             {
                 var duracao = int.Parse(eventos.DuracaoEvento);
                 evento.end = evento.start.AddMinutes(duracao);
             }
-
             else
             {
                 evento.end = evento.start.AddMinutes(30);
             }
+
+            var validaHorario = new ValidaHorario();
+            var possuiAgendamento = validaHorario.PossuiAgendamentoSalvar(eventos, evento.end, evento.start);
+            if (possuiAgendamento)
+            {
+                return Json(new { message = "Este profissional já possui um agendamento neste horario!" }, JsonRequestBehavior.AllowGet);
+            }
+
             evento.Consulta = eventos.Consulta;
             evento.Retorno = eventos.Retorno;
 
@@ -147,70 +149,41 @@ namespace FullCalendar_MVC.Controllers
             evento.ConvenioId = eventos.ConvenioId;
             evento.Observacoes = eventos.Observacoes;
 
-
-            var profissionalId = Guid.Parse(eventos.ProfissionalId);
-
-            //var possuiAgendamento = Db.Eventos
-            //    .FirstOrDefault(e => e.ProfissionalId == profissionalId &&
-            //                         e.start >= evento.start && e.end <= evento.end);
-
-            //if (possuiAgendamento != null && possuiAgendamento.ID != eventos.ID)
-            //{
-            //    return   Json(new { message = "Este profissional já possui um agendamento neste horario!"} );
-            //}
-
             if (evento.start <= DateTime.Now)
             {
-                return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
+                return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" }, JsonRequestBehavior.AllowGet);
             }
             Db.Eventos.Add(evento);
             Db.SaveChanges();
-            return Json(new { message = "Evento salvo com sucesso!" });
+            return Json(new { message = "Evento salvo com sucesso!" }, JsonRequestBehavior.AllowGet);
         }
 
         // Atualiza a duração do evento
         public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
-            if (evento != null)
+            var ev = new EventoViewModel();
+            ev.ProfissionalId = Convert.ToString(evento.ProfissionalId);
+
+            evento.ID = id;
+            evento.start = Convert.ToDateTime(NewEventStart);
+            evento.end = Convert.ToDateTime(NewEventEnd);
+
+            var validaHorario = new ValidaHorario();
+
+            var possuiAgendamento = validaHorario.PossuiAgendamento(ev, evento.end);
+            if (possuiAgendamento)
             {
-                evento.ID = id;
-                evento.start = Convert.ToDateTime(NewEventStart);
-                evento.end = Convert.ToDateTime(NewEventEnd);
-
-
-
-                 var tm = new TimeSpan(0, 1, 0);
-                 var convertido = evento.end.Subtract(tm);
-
-                //if (evento == null) return Json(new { message = "Falha ao atualizar eventos" });
-
-                 var verificaExistencia = Db.Eventos.FirstOrDefault(d => d.start == evento.start && d.ProfissionalId == evento.ProfissionalId);
-
-                //&& evento.ID != verificaExistencia.ID
-                if (verificaExistencia != null)
-                    return Json(new { message = "Falha ao atualizar eventos" });
-
-
-
-                //var possuiAgendamento =
-                //    Db.Eventos
-                //    .FirstOrDefaultAsync(e => e.start >= evento.start && e.end <= convertido &&
-                //     e.ProfissionalId == evento.ProfissionalId);
-
-                //if (possuiAgendamento != null)
-                //{
-                //    return Json(new { message = "Possui Agendamento" });
-                //}
-
-                if (evento.end <= DateTime.Now)
-                    return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" });
-
-
-                Db.Entry(evento).State = EntityState.Modified;
+                return Json(new { message = "Possui Agendamento" }, JsonRequestBehavior.AllowGet);
             }
+
+            if (evento.end <= DateTime.Now)
+                return Json(new { message = "Não é possivel gravar um evento com a data anterior que a atual" }, JsonRequestBehavior.AllowGet);
+
+            Db.Entry(evento).State = EntityState.Modified;
+
             Db.SaveChanges();
-            return Json(new { message = "Sucesso" });
+            return Json(new { message = "Sucesso" }, JsonRequestBehavior.AllowGet);
         }
 
         //Obterm por Id
@@ -226,6 +199,7 @@ namespace FullCalendar_MVC.Controllers
                 end = Convert.ToDateTime(eventos.end),
                 ProfissionalId = eventos.ProfissionalId,
                 Observacoes = eventos.Observacoes,
+                ConvenioId = eventos.ConvenioId,
                 Consulta = eventos.Consulta,
                 Retorno = eventos.Retorno
             };

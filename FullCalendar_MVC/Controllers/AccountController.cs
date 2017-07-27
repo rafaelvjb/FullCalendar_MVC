@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -431,6 +432,8 @@ namespace FullCalendar_MVC.Controllers
             base.Dispose(disposing);
         }
 
+        
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -490,5 +493,5 @@ namespace FullCalendar_MVC.Controllers
         }
         #endregion
     }
-}
 
+}

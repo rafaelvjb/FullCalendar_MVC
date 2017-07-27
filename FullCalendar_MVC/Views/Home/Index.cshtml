@@ -53,8 +53,17 @@
                             $('#editEventDate').val(ObtemData(data.start));
                             $('#editEventTime').val(ObtemHora(data.start));
                             $('#editEventDuration').val(ObtemHora(data.end));
+                            $('#convenioE').val(data.ConvenioId);
                             $('#profissionalE').val(data.ProfissionalId);
                             $('#Observacoes').val(data.Observacoes);
+                            if (data.Consulta === true) {
+                                $('#ConsultaE').prop("checked",true);
+                            } else {
+                                $('#RetornoE').prop("checked",true);
+                            }
+                          //  $('#ConsultaE').val(data.Consulta);
+                            //$('#RetornoE').val(data.Retorno);
+
                             ModalEditar(data);
                         }
                     });
@@ -62,22 +71,8 @@
 
                 eventDrop: function (event, dayDelta, minuteDelta, allDay, revertFunc) {
                     UpdateEvent(event.ID, event.start, event.end);
-                    //swal({
-                    //    title: "Ajax request example",
-                    //    text: "Submit to run ajax request",
-                    //    type: "info",
-                    //    showCancelButton: true,
-                    //    closeOnConfirm: false,
-                    //    showLoaderOnConfirm: true,
-                    //},
-                    //function () {
-                    //    UpdateEvent(event.ID, event.start, event.end);
-                    //    setTimeout(function(){
-                    //        swal("Movido com sucesso!!!");
-                    //    }, 4000);
-                    //   // location.reload();
-                    //});
                 },
+
                 eventResize: function (event, dayDelta, minuteDelta, revertFunc) {
                     UpdateEvent(event.ID, event.start, event.end);
                 },
@@ -121,6 +116,7 @@
             $('#calendar').fullCalendar('rerenderEvents');
             CalLoading = false;
         });
+
         //Botão cancelar do modal editar
         $('#btnPopupCancel').click(function () {
             ClearPopupFormValues();
@@ -157,9 +153,9 @@
 
         //Função que serializa o formulário para adicionar e envia para o controller por ajax
         $(function () {
-            $("#formClienteAdicionar input[type=submit]").click(function (event) {
+            $("#formClienteAdcionar input[type=submit]").click(function (event) {
                 event.preventDefault();
-                var form = document.getElementById("formClienteAdicionar");
+                var form = document.getElementById("formClienteAdcionar");
                 var data = $(form).serialize();
                 $.post(form.action,
                     data,
@@ -167,7 +163,6 @@
                         if (response.message === 'Evento salvo com sucesso!') {
                             swal({
                                 title: 'Evento salvo com sucesso!!!',
-                                //text: "You will not be able to recover this imaginary file!",
                                 type: "success",
                                 timer: 5000,
                                 showConfirmButton: true
@@ -204,7 +199,6 @@
                         if (response.message === 'Alterado com Sucesso') {
                             swal({
                                 title: 'Alterado com Sucesso!!!',
-                                //text: "You will not be able to recover this imaginary file!",
                                 type: "success",
                                 timer: 5000,
                                 showConfirmButton: true
@@ -228,6 +222,7 @@
             });
 
         });
+
         //função que chama o ModalAdicionar
         function ModalAdicionar(date) {
             ClearPopupFormValues();
