@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using FullCalendar_MVC.Models;
 using FullCalendar_MVC.Models.ViewModels;
@@ -63,7 +64,7 @@ namespace FullCalendar_MVC.Controllers
         }
 
         //Atualiza Evento
-        public JsonResult AtualizaEvento(EventoViewModel eventos)
+        public async Task<JsonResult> AtualizaEvento(EventoViewModel eventos)
         {
             var data = DateTime.Parse(eventos.DataEvento);
             var hora = eventos.HoraEvento.Split(':');
@@ -77,8 +78,8 @@ namespace FullCalendar_MVC.Controllers
 
             var validaHorario = new ValidaHorario();
 
-            var possuiAgendamento = validaHorario.PossuiAgendamento(eventos, datafim);
-            if (possuiAgendamento)
+            var possuiAgendamento = validaHorario.PossuiAgendamentoEditar(eventos, start, end);
+            if (await possuiAgendamento)
             {
                 return Json(new { message = "Este profissional já possui um agendamento neste horario!" }, JsonRequestBehavior.AllowGet);
             }
@@ -159,10 +160,11 @@ namespace FullCalendar_MVC.Controllers
         }
 
         // Atualiza a duração do evento
-        public JsonResult AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
+        public async Task<JsonResult> AtualizaDuracao(int id, string NewEventStart, string NewEventEnd)
         {
             var evento = Db.Eventos.FirstOrDefault(e => e.ID == id);
             var ev = new EventoViewModel();
+            ev.ID = id;
             ev.ProfissionalId = Convert.ToString(evento.ProfissionalId);
 
             evento.ID = id;
@@ -171,8 +173,8 @@ namespace FullCalendar_MVC.Controllers
 
             var validaHorario = new ValidaHorario();
 
-            var possuiAgendamento = validaHorario.PossuiAgendamento(ev, evento.end);
-            if (possuiAgendamento)
+            var possuiAgendamento = validaHorario.PossuiAgendamentoEditar(ev,evento.start, evento.end);
+            if (await possuiAgendamento)
             {
                 return Json(new { message = "Possui Agendamento" }, JsonRequestBehavior.AllowGet);
             }

@@ -28,11 +28,11 @@
                     center: 'title',
                     right: 'month,agendaWeek,agendaDay'
                 },
-                defaultView: 'agendaDay',
+                defaultView: 'agendaWeek',
                 editable: true,
                 allDaySlot: false,
                 selectable: true,
-                slotMinutes: 15,
+                slotMinutes: 5,
                 height: 472,
                 events: {
                     url: 'Eventos',
@@ -322,7 +322,8 @@
 
                         case "Possui Agendamento":
                             swal({
-                                title: "Este profissional já possui um agendamento neste horario!",
+                                title: "Este profissional já possui um agendamento neste horario. " +
+                                    " Ou a data é anterior a data atual",
                                 type: "error",
                                 timer: 2000,
                                 showConfirmButton: true
@@ -485,7 +486,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" style="text-align:center;" id="editModalLabel">Editar Eventos</h4>
+                <h4 class="modal-title" style="text-align:center;" id="editModalLabel">Editar Eventos - <label id="lbDataE"></label></h4>
             </div>
             <div class="modal-body">
                 @using (Html.BeginForm("AtualizaEvento", "Home", FormMethod.Post, new { id = "formClienteEditar" }))

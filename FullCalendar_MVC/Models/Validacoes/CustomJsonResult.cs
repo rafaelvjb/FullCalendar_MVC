@@ -8,8 +8,8 @@ namespace FullCalendar_MVC.Models.Validacoes
     {
         private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
-            Formatting = Newtonsoft.Json.Formatting.Indented,
-            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
         public override void ExecuteResult(ControllerContext context)
